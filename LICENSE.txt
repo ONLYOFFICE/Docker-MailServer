@@ -79,7 +79,7 @@ License:        The MIT License (MIT)
 License File:   https://github.com/phusion/passenger/blob/master/LICENSE
 
 
-7. python-daemon - This library implements the well-behaved daemon specification of PEP 3143, ìStandard daemon process libraryî (https://pypi.python.org/pypi/python-daemon/).
+7. python-daemon - This library implements the well-behaved daemon specification of PEP 3143, ‚ÄúStandard daemon process library‚Äù (https://pypi.python.org/pypi/python-daemon/).
 
 License:        PSF-2+
 
