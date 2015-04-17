@@ -114,7 +114,7 @@ docker-compose up -d
 
 Official website: [http://www.onlyoffice.org](http://onlyoffice.org "http://www.onlyoffice.org")
 
-License: [GNU GPL v.2.0](https://www.gnu.org/licenses/gpl-2.0.html "GNU GPL v.2.0")
+License: [View](https://raw.githubusercontent.com/ONLYOFFICE/Docker-MailServer/master/LICENSE.txt "View")
 
 SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.onlyoffice.com")
 
