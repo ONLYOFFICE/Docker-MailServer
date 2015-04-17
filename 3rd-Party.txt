@@ -1,0 +1,177 @@
+MailServer uses 3rd party projects.
+
+1. iRedMail - A ZERO COST, fully fledged, full-featured mail server solution (http://www.iredmail.org/). 
+
+License:        GPL v2
+
+Used major open source softwares: 
+
+	- Postfix: SMTP service (http://www.postfix.org/)
+	  
+	  License:        IBM Public license v1.0
+	  License File:   http://www.postfix.org/IBM-Public-License-1.0.txt
+	
+	- Dovecot: POP3/POP3S, IMAP/IMAPS, Managesieve service (http://www.dovecot.org/)
+	
+	  License:        MIT and LGPLv2
+	  License File:   http://www.dovecot.org/doc/COPYING
+		
+	- Apache: Web server
+	
+	  License:        Apache License, v2.0
+	  License File:   http://www.apache.org/licenses/LICENSE-2.0
+	  
+	- MySQL: Storing application data and/or mail accounts
+	
+	  License:        GPL v2 or proprietary
+	  
+	- Cluebringer: Postfix policy server (http://wiki.policyd.org/)
+	
+	  License:        GPL v2+
+	  
+	- SpamAssassin: content-based spam scanner (http://spamassassin.apache.org/)
+	
+	  License:        Apache License 2.0
+	  
+	- Amavisd: An interface between Postfix and SpamAssassin, ClamAV. Used for spam and virus scanning
+	
+	  License:        GPL v2
+	  
+	- ClamAV: virus scanner (http://www.clamav.net/index.html)
+	
+	  License:        GPL v2
+	  
+    - Awstats: Apache and Postfix log analyzer
+	
+	  License:        GPL v3
+	  License File:   http://www.awstats.org/docs/awstats_license.html
+
+	- Fail2ban: scans log files and bans IPs that show the malicious signs -- too many password failures, seeking for exploits, etc. (http://www.fail2ban.org/)
+	
+	  License:        GPL v2
+
+
+2. OpenDKIM - OpenDKIM is an open source implementation of the DKIM (Domain Keys Identified Mail) sender authentication system
+
+License:        BSD, custom:Sendmail
+License File:   http://www.opendkim.org/license.html
+
+
+3. Posty API - The posty_API is the core element of the posty softwarestack. It is developed to administrate a mailserver based on Postfix and Dovecot (https://posty-soft.org/doc_api.html).
+
+License:        GPL v3
+
+
+4. lockfile - The lockfile module exports a FileLock class which provides a simple API for locking files (https://pypi.python.org/pypi/lockfile/0.8).
+
+License:        The MIT License (MIT)
+
+
+5. opendbx - OpenDBX is an extremely lightweight but extensible database access library written in C. It provides an abstraction layer to all 
+supported databases with a single, clean and simple interface that leads to an elegant code design automatically http://www.linuxnetworks.de/doc/index.php/OpenDBX).
+
+License:        LGPL
+
+
+6. Fusion Passanger - A fast and robust web server and application server for Ruby, Python and Node.js (https://www.phusionpassenger.com/).
+
+License:        The MIT License (MIT)
+License File:   https://github.com/phusion/passenger/blob/master/LICENSE
+
+
+7. python-daemon - This library implements the well-behaved daemon specification of PEP 3143, “Standard daemon process library” (https://pypi.python.org/pypi/python-daemon/).
+
+License:        PSF-2+
+
+
+8. RVM - VM is a command-line tool which allows you to easily install, manage, and work with multiple ruby environments from interpreters to sets of gems (https://rvm.io/).
+
+License:        GPLv3
+
+
+9. Ruby - programming language
+
+License:        Ruby License
+License File:   https://www.ruby-lang.org/en/about/license.txt
+
+
+10. RubyGems - RubyGems is a package manager for the Ruby programming language that provides a standard format for distributing Ruby programs and libraries 
+(in a self-contained format called a "gem"), a tool designed to easily manage the installation of gems, and a server for distributing them (https://rubygems.org/).
+
+License:        Ruby License
+
+
+11. GNU Readline Library - The GNU Readline library provides a set of functions for use by applications that allow users to edit command lines 
+as they are typed in (http://cnswww.cns.cwru.edu/php/chet/readline/rltop.html).
+
+License:        GPL v3
+
+
+12. GCC - The GNU Compiler Collection includes front ends for C, C++, Objective-C, Fortran, Java, Ada, and Go, as well 
+as libraries for these languages (https://gcc.gnu.org/).
+
+License:        GPL v3
+
+
+13. Milter - Milter (portmanteau for mail filter) is an extension to the widely used open source mail transfer agents (MTA) Sendmail 
+and Postfix (https://www.milter.org/).
+
+License:        BSD
+
+
+14. libbsd - This library provides useful functions commonly found on BSD systems, and lacking on others like GNU systems, thus making it easier to port 
+projects with strong BSD origins, without needing to embed the same code over and over again on each project (http://libbsd.freedesktop.org/wiki/).
+
+License:        New BSD, The MIT License (MIT)
+
+
+15. GNU Libtool - GNU libtool is a generic library support script. Libtool hides the complexity of using shared libraries behind a consistent, 
+portable interface (http://www.gnu.org/software/libtool/).
+
+License:        GPL v2
+
+
+16. libyaml - LibYAML is a YAML 1.1 parser and emitter written in C. (http://pyyaml.org/wiki/LibYAML).
+
+License:        The MIT License (MIT)
+
+
+17. libffi - A Portable Foreign Function Interface Library (http://sourceware.org/libffi/).
+
+License:        AS-IS
+License File:   https://github.com/atgreen/libffi/blob/master/LICENSE
+
+
+18. OpenSSL - OpenSSL is based on the excellent SSLeay library developed (http://www.openssl.org/),
+
+License:        Apache License
+License File:   http://www.openssl.org/source/license.html
+
+
+19. GNU Bison - Bison is a general-purpose parser generator that converts an annotated context-free grammar into a deterministic LR 
+or generalized LR (GLR) parser employing LALR(1) parser tables (http://www.gnu.org/software/bison/).
+
+License:        GPL v3
+
+
+20. curl - Curl is a command line tool and library for transferring data with URL syntax, supporting DICT, FILE, FTP, FTPS, 
+Gopher, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMB, SMTP, SMTPS, 
+Telnet and TFTP. curl supports SSL certificates, HTTP POST, HTTP PUT, FTP uploading, HTTP form based upload, proxies, 
+HTTP/2, cookies, user+password authentication (Basic, Plain, Digest, CRAM-MD5, NTLM, Negotiate and Kerberos), 
+file transfer resume, proxy tunneling and more (http://curl.haxx.se/).
+
+License:        MIT/X derivate license
+License File:   http://curl.haxx.se/docs/copyright.html
+
+
+21. zlib - zlib is a software library used for data compression (http://www.zlib.net/).
+
+License:        AS-IS
+License File:   http://www.zlib.net/zlib_license.html
+
+
+22. sqlite-devel - This package contains the header files and development documentation for sqlite. If you like to develop programs using 
+sqlite, you will need to install sqlite-devel.
+
+License:        sqlite license
+License File:   http://www.sqlite.org/copyright.html

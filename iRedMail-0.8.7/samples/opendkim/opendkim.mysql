@@ -1,0 +1,9 @@
+CREATE TABLE dkim ( 
+  id int(10) unsigned NOT NULL AUTO_INCREMENT, 
+  domain_name varchar(255) CHARACTER SET latin1 NOT NULL,
+  selector varchar(63) NOT NULL,
+  private_key text CHARACTER SET latin1, 
+  public_key text CHARACTER SET latin1, 
+  PRIMARY KEY (id), 
+  KEY domain_name (domain_name) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

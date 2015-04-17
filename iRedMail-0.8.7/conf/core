@@ -1,0 +1,591 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+ECHO_INFO()
+{
+    if [ X"$1" == X"-n" ]; then
+        shift 1
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -ne "\033[42m${_INFO_FLAG}\033[0m $@"
+        else
+            echo -ne "${_INFO_FLAG} $@"
+        fi
+    else
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -e "\033[42m${_INFO_FLAG}\033[0m $@"
+        else
+            echo -e "${_INFO_FLAG} $@"
+        fi
+    fi
+}
+
+ECHO_SKIP()
+{
+    if [ X"$1" == X"-n" ]; then
+        shift 1
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -ne "\033[42m${_SKIP_FLAG}\033[0m $@"
+        else
+            echo -ne "${_SKIP_FLAG} $@"
+        fi
+    else
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -e "\033[42m${_SKIP_FLAG}\033[0m $@"
+        else
+            echo -e "${_SKIP_FLAG} $@"
+        fi
+    fi
+}
+ECHO_QUESTION()
+{
+    if [ X"$1" == X"-n" ]; then
+        shift 1
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -ne "\033[45m${_QUESTION_FLAG}\033[0m $@"
+        else
+            echo -ne "${_QUESTION_FLAG} $@"
+        fi
+    else
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -e "\033[45m${_QUESTION_FLAG}\033[0m $@"
+        else
+            echo -e "${_QUESTION_FLAG} $@"
+        fi
+    fi
+}
+
+ECHO_ERROR()
+{
+    if [ X"$1" == X"-n" ]; then
+        shift 1
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -ne "\033[41m${_ERROR_FLAG}\033[0m $@"
+        else
+            echo -ne "${_ERROR_FLAG} $@"
+        fi
+    else
+        if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+            echo -e "\033[41m${_ERROR_FLAG}\033[0m $@"
+        else
+            echo -e "${_ERROR_FLAG} $@"
+        fi
+    fi
+}
+
+ECHO_DEBUG()
+{
+    if [ X"${IREDMAIL_DEBUG}" == X"YES" ]; then
+        if [ X"$1" == X"-n" ]; then
+            shift 1
+            if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+                echo -ne "\033[42m${_DEBUG_FLAG}\033[0m $@"
+            else
+                echo -ne "${_DEBUG_FLAG} $@"
+            fi
+        else
+            if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+                echo -e "\033[42m${_DEBUG_FLAG}\033[0m $@"
+            else
+                echo -e "${_DEBUG_FLAG} $@"
+            fi
+        fi
+    else
+        :
+    fi
+}
+
+read_setting()
+{
+    answer="${1}"
+    if [ ! -z "${answer}" ]; then
+        ANSWER="${answer}"
+        echo ${ANSWER}
+    else
+        read ANSWER
+    fi
+}
+
+backup_file()
+{
+    # Usage: backup_file file1 [file2 file3 ... fileN]
+    if [ X"$#" != X"0" ]; then
+        for conf_file in $@; do
+            if [ -f ${conf_file} ]; then
+                if [ X"${TERM}" == X"xterm" -o X"${TERM}" == X"linux" -o X"${TERM}" == X"pcconsole" ]; then
+                    if [ X"${IREDMAIL_DEBUG}" == X"YES" ]; then
+                        echo -e "\033[43m${_BACKUP_FLAG}\033[0m ${conf_file} -> $(basename ${conf_file}).${DATE}."
+                    fi
+                else
+                    if [ X"${IREDMAIL_DEBUG}" == X"YES" ]; then
+                        echo -e "${_BACKUP_FLAG} ${conf_file} -> $(basename ${conf_file}).${DATE}."
+                    fi
+                fi
+
+                cp -f ${conf_file} ${conf_file}.${DATE}
+            else
+                :
+            fi
+        done
+    else
+        :
+    fi
+}
+
+check_user()
+{
+    # Check special user privilege to execute this script.
+    if [ X"$(id -u)" != X"$(id -u ${1})" ]; then
+        ECHO_ERROR "Please run this script as user: ${1}."
+        exit 255
+    else
+        if [ X"$(id -u)" == X"0" ]; then
+            export PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"
+        else
+            :
+        fi
+    fi
+}
+
+check_hostname()
+{
+    echo ${HOSTNAME} | grep '\.' >/dev/null 2>&1
+    [ X"$?" != X"0" ] && \
+        ECHO_ERROR "Please configure a fully qualified domain name (FQDN) in /etc/hosts before we go further.\n\nExample:\n\n127.0.0.1   mail.iredmail.org mail localhost\n" && \
+        exit 255
+}
+
+check_pkg()
+{
+    # Usage: check_pkg <command> <package>
+    # It means: <package> owns <command>
+    cmd="$1"
+    pkg="$2"
+
+    for i in $(echo $PATH|sed 's/:/ /g'); do
+        [ -x $i/${cmd} ] && export HAS_CMD='YES' && break
+    done
+
+    if [ X"${HAS_CMD}" != X'YES' ]; then
+        ECHO_INFO "Install package: ${pkg}"
+        eval ${install_pkg} ${pkg}
+        if [ X"$?" != X"0" ]; then
+            ECHO_ERROR "Please install package ${pkg} first." && exit 255
+        fi
+    fi
+
+    unset HAS_CMD
+}
+
+# Check necessery privileges/files/dirs.
+check_env()
+{
+    # Check user privilege.
+    check_user root
+
+    # Check FQDN hostname.
+    check_hostname
+
+    ECHO_INFO -n "Checking configuration file: ${IREDMAIL_CONFIG_FILE} ..."
+
+	grep '^#EOF$' ${IREDMAIL_CONFIG_FILE} >/dev/null
+	if [ X"$?" == X"0" ]; then
+		echo -e " [FOUND]"
+		
+		# Check installation status.
+		# After each component installation was completed, there
+		# should be a variable in ${STATUS_FILE}, e.g.
+		#
+		#   export STATUS_PHP_INSTALLATION='DONE'
+		#   export STATUS_PHP_CONFIGURATION='DONE'
+		#
+		if [ -e ${STATUS_FILE} ]; then
+			ECHO_INFO "Import installation process status from file: ${STATUS_FILE}."
+			. ${STATUS_FILE}
+		else
+			echo '' > ${STATUS_FILE}
+		fi
+
+		# Initialize tip file.
+		if [ ! -e ${TIP_FILE} ]; then
+			cat > ${TIP_FILE} <<EOF
+${CONF_MSG}
+EOF
+		else
+			:
+		fi
+
+	else
+		echo -e "\tFound, but not finished."
+		exit 255
+	fi
+
+
+}
+
+extract_pkg()
+{
+    if [ X"$2" = X"" ]; then
+        DST='.'
+    else
+        DST="$2"
+    fi
+
+    if echo $1 | grep '.tar.gz$' >/dev/null 2>&1 ; then
+        ECHO_DEBUG "Extracting: $1 -> ${DST}"
+        tar zxf $1 -C $DST
+    elif echo $1 | grep '.tgz$' >/dev/null 2>&1 ; then
+        ECHO_DEBUG "Extracting: $1 -> ${DST}"
+        tar zxf $1 -C $DST
+    elif echo $1 | grep '.tar.bz2$' >/dev/null 2>&1 ; then
+        # Install bzip2 first.
+        check_pkg ${BIN_BZIP2} ${PKG_BZIP2}
+
+        ECHO_DEBUG "Extracting: $1 -> ${DST}"
+        tar xjf $1 -C $DST
+    else
+        ECHO_ERROR "Unknown archive format."
+    fi
+}
+
+check_status_before_run()
+{
+    #
+    # Every function will append status info to ${STATUS_FILE}.
+    # Format is:
+    #   function_name() {:}
+    # Status info:
+    #   export status_function_name='DONE'
+    #
+    _status="status_$1"
+    if [ X"$(eval echo \$${_status})" != X"DONE" ]; then
+        $1
+    else
+        ECHO_SKIP "Function: $1."
+    fi
+}
+
+hash_domain()
+{
+    # Usage: hash_domain domain
+    domain="$( echo $1 | tr [A-Z] [a-z] )"
+
+    # Different domain style: hashed, normal.
+    #if [ X"${MAILDIR_STYLE}" == X"hashed" ]; then
+    #    length="$(echo ${domain} | wc -L)"
+    #    str1="$(echo ${domain} | cut -c1)"
+    #    str2="$(echo ${domain} | cut -c2)"
+
+    #    if [ X"${length}" == X"1" ]; then
+    #        str2="${str1}"
+    #    elif [ X"${length}" == X"2" ]; then
+    #        str2="${str2}"
+    #    else
+    #        :
+    #    fi
+
+        # Use mbox, will be changed later.
+    #    domain="${str1}/${str1}${str2}/${domain}"
+    #else
+        # Use mbox, will be changed later.
+    #    domain="${domain}"
+    #fi
+
+    echo ${domain}
+}
+
+# Hash maildir string.
+hash_maildir()
+{
+    # Usage: hash_maildir username
+    username="$( echo $1 | tr [A-Z] [a-z] )"
+
+    # Different maildir style: hashed, normal.
+    if [ X"${MAILDIR_STYLE}" == X"hashed" ]; then
+        str1="$(echo ${username} | cut -c1)"
+        str2="$(echo ${username} | cut -c2)"
+        str3="$(echo ${username} | cut -c3)"
+
+        if [ X"${username}" == X"${str1}" ]; then
+            # Username has only one character
+            str2="${str1}"
+            str3="${str1}"
+        elif [ X"${username}" == X"${str1}${str2}" ]; then
+            str3="${str2}"
+        else
+            :
+        fi
+
+        # Use mbox, will be changed later.
+        maildir="${str1}/${str2}/${str3}/${username}-${DATE}"
+    else
+        # Use mbox, will be changed later.
+        maildir="${username}-${DATE}"
+    fi
+
+    # For maildir format.
+    [ X"${MAILBOX_FORMAT}" == X"Maildir" ] && maildir="${maildir}/"
+
+    echo ${maildir}
+}
+
+# -----------------------------------------------------------------
+# - OS/OS_Version/Arch dependent.
+# -----------------------------------------------------------------
+enable_service_rh()
+{
+    services="$@"
+    for i in $services; do
+        if [ -x /etc/init.d/$i ]; then
+            ECHO_DEBUG "Enable service: $i."
+            /sbin/chkconfig --level 345 $i on
+        fi
+    done
+}
+
+disable_service_rh()
+{
+    services="$@"
+    for i in $services; do
+        if [ -x /etc/init.d/$i ]; then
+            ECHO_DEBUG "Disable service: $i."
+            /sbin/chkconfig --level 345 $i off
+        fi
+    done
+}
+
+enable_service_debian()
+{
+    services="$@"
+    for i in $services; do
+        if [ -x /etc/init.d/$i ]; then
+            ECHO_DEBUG "Enable service: $i."
+            update-rc.d $i defaults
+        fi
+    done
+}
+
+disable_service_debian()
+{
+    services="$@"
+    for i in $services; do
+        if [ -x /etc/init.d/$i ]; then
+            ECHO_DEBUG "Disable service: $i."
+            update-rc.d -f $i remove
+        fi
+    done
+}
+
+service_control()
+{
+    service="$1"
+    action="$2"
+    tmp_rc_script="${DIR_RC_SCRIPTS}/${service}"
+    if [ -x ${tmp_rc_script} ]; then
+        ${tmp_rc_script} ${action}
+    else
+        ECHO_ERROR "File not exist or not executable: ${tmp_rc_script}."
+    fi
+}
+
+# Generate MD5 password
+gen_md5_passwd()
+{
+    # Usage: gen_sql_passwd 'plain_password'
+    openssl passwd -1 ${1}
+}
+
+gen_ldap_passwd()
+{
+    if [ X"${DISTRO}" == X'FREEBSD' -o X"${DISTRO}" == X'OPENBSD' ]; then
+        SLAPPASSWD='/usr/local/sbin/slappasswd'
+    else
+        SLAPPASSWD='/usr/sbin/slappasswd'
+    fi
+
+    password="${1}"
+    if [ -x ${SLAPPASSWD} ]; then
+        ${SLAPPASSWD} -h {SSHA} -s "${password}"
+    else
+        python ${TOOLS_DIR}/generate_ssha_password.py ${password}
+    fi
+}
+
+# Create SSL certs/private files.
+generate_ssl_keys()
+{
+    ECHO_INFO "Create self-signed SSL certification files (${SSL_KEY_SIZE} bits)."
+
+    # Create necessary directories.
+    mkdir -p ${SSL_KEY_DIR} ${SSL_CERT_DIR} &>/dev/null
+
+    openssl req \
+        -x509 -nodes -days 3650 -newkey rsa:${SSL_KEY_SIZE} -sha256 \
+        -subj "/C=${TLS_COUNTRY}/ST=${TLS_STATE}/L=${TLS_CITY}/O=${TLS_COMPANY}/OU=${TLS_DEPARTMENT}/CN=${TLS_HOSTNAME}/emailAddress=${TLS_ADMIN}/" \
+        -out ${SSL_CERT_FILE} -keyout ${SSL_KEY_FILE} &>/dev/null
+
+    cp -f ${SSL_CERT_FILE} ${SSL_CA_BUNDLE_FILE}
+
+    # Set correct file permission.
+    chmod +r ${SSL_CERT_FILE}
+    chmod +r ${SSL_KEY_FILE}
+    chmod +r ${SSL_CA_BUNDLE_FILE}
+
+    cat >> ${TIP_FILE} <<EOF
+
+SSL cert keys (size: ${SSL_KEY_SIZE}):
+    - ${SSL_CERT_FILE}
+    - ${SSL_KEY_FILE}
+    - ${SSL_CA_BUNDLE_FILE}
+
+EOF
+}
+
+# Add alias entry in Postfix /etc/postfix/aliases.
+add_postfix_alias()
+{
+    # Usage: add_postfix_alias nobody root
+    # File /path/to/aliases will be created if not exist.
+    export alias_orig="${1}"
+    export alias_dest="${2}"
+
+    if [ ! -f ${POSTFIX_FILE_ALIASES} ]; then
+        if [ -f /etc/aliases ]; then
+            cp -f /etc/aliases ${POSTFIX_FILE_ALIASES}
+        else
+            # Create an empty file
+            touch ${POSTFIX_FILE_ALIASES}
+        fi
+    fi
+
+    # If alias_orig exists, comment it out
+    if grep "^${alias_orig}:" ${POSTFIX_FILE_ALIASES} >/dev/null 2>&1; then
+        perl -pi -e 's/^($ENV{alias_orig}:.*)/#${1}/' ${POSTFIX_FILE_ALIASES}
+    fi
+
+    # Add new alias
+    echo "${alias_orig}: ${alias_dest}" >> ${POSTFIX_FILE_ALIASES}
+
+    postalias hash:${POSTFIX_FILE_ALIASES} >/dev/null 2>&1
+    unset alias_orig
+    unset alias_dest
+}
+
+# Install/Remove binary packages on RHEL/CentOS.
+install_pkg_rhel()
+{
+    ECHO_INFO "Installing package(s): $@"
+    ${YUM} -y --disablerepo=rpmforge,ius,remi install $@
+    if [ X"$?" != X"0" ]; then
+        ECHO_ERROR "Installation failed, please check the terminal output."
+        ECHO_ERROR "If you're not sure what the problem is, try to get help in iRedMail"
+        ECHO_ERROR "forum: http://www.iredmail.org/forum/"
+        exit 255
+    else
+        :
+    fi
+}
+
+remove_pkg_rhel()
+{
+    ECHO_INFO "Removing package(s): $@"
+    ${YUM} remove -y $@
+    [ X"$?" != X"0" ] && ECHO_ERROR "Package removed failed, please check the terminal output."
+}
+
+# Install/Remove binary packages on Debian/Ubuntu.
+install_pkg_debian()
+{
+    ECHO_INFO "Installing package(s): $@"
+    ${APTGET} install -y --force-yes $@
+    if [ X"$?" != X"0" ]; then
+        ECHO_ERROR "Installation failed, please check the terminal output."
+        exit 255
+    else
+        :
+    fi
+}
+
+remove_pkg_debian()
+{
+    ECHO_INFO "Removing package(s): $@"
+    ${APTGET} purge -y $@
+    [ X"$?" != X"0" ] && ECHO_ERROR "Package removed failed, please check the terminal output."
+}
+
+enable_service_openbsd()
+{
+    # USAGE: enable_service_openbsd flag value
+    # For example: enable_service_openbsd sendmail_flags ''
+    [ -f ${RC_CONF_LOCAL} ] || touch ${RC_CONF_LOCAL}
+    if [ X"$#" == X'2' ]; then
+        flag="${1}"
+        value="${2}"
+        comment_mark="# ${PROG_NAME}-${flag}"
+        if ! grep "^${comment_mark}$" ${RC_CONF_LOCAL} &>/dev/null; then
+            ECHO_DEBUG "Add flag in ${RC_CONF_LOCAL}: ${flag}='${value}'"
+            echo "${comment_mark}" >> ${RC_CONF_LOCAL}
+            echo "${flag}='${value}'" >> ${RC_CONF_LOCAL}
+        else
+            ECHO_DEBUG "Skip adding flag in ${RC_CONF_LOCAL}: ${pkg}='${value}'"
+        fi
+    fi
+}
+
+freebsd_add_make_conf()
+{
+    # USAGE: freebsd_add_make_conf VAR VALUE
+    [ -f ${FREEBSD_MAKE_CONF} ] || touch ${FREEBSD_MAKE_CONF}
+    if [ X"$#" == X'2' ]; then
+        var="${1}"
+        value="${2}"
+        final_option="${1}=${2}"
+        comment_mark="# ${PROG_NAME}-${var}"
+        if ! grep "^${comment_mark}$" ${FREEBSD_MAKE_CONF} &>/dev/null; then
+            ECHO_DEBUG "Add make option in ${FREEBSD_MAKE_CONF}: ${final_option}"
+            echo "${comment_mark}" >> ${FREEBSD_MAKE_CONF}
+            echo "${final_option}" >> ${FREEBSD_MAKE_CONF}
+        else
+            ECHO_DEBUG "Skip adding option in ${FREEBSD_MAKE_CONF}: ${final_option}"
+        fi
+    fi
+}
+
+freebsd_enable_service_in_rc_conf()
+{
+    # USAGE: freebsd_enable_service_in_rc_conf VAR VALUE
+    if [ X"${DISTRO}" == X'FREEBSD' ]; then
+        [ -f /etc/rc.conf ] || touch /etc/rc.conf
+        if [ X"$#" == X'2' ]; then
+            var="${1}"
+            value="${2}"
+            final_option="${1}='${2}'"
+            comment_mark="# ${PROG_NAME}-${var}"
+            if ! grep "^${comment_mark}$" /etc/rc.conf &>/dev/null; then
+                ECHO_DEBUG "Add setting in /etc/rc.conf: ${final_option}"
+                echo "${comment_mark}" >> /etc/rc.conf
+                echo "${final_option}" >> /etc/rc.conf
+            else
+                ECHO_DEBUG "Skip adding setting in /etc/rc.conf: ${final_option}"
+            fi
+        fi
+    fi
+}

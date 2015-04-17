@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+
+export FAIL2BAN_TARBALL="fail2ban-ban-time-incr.tar.gz"
+export FAIL2BAN_SOURCE_DIR="fail2ban-ban-time-incr"
+
+export FAIL2BAN_SOCK_DIR='/var/run/fail2ban'
+
+export FAIL2BAN_SAMPLE_LOCAL_CF="${SAMPLE_DIR}/fail2ban/jail.local"
+export FAIL2BAN_SAMPLE_POSTFIX_CF="${SAMPLE_DIR}/fail2ban/postfix.conf"
+export FAIL2BAN_SAMPLE_IPTABLE_CF="${SAMPLE_DIR}/fail2ban/iptables-multiport.conf"
+export FAIL2BAN_SAMPLE_LOGROTATE_CF="${SAMPLE_DIR}/fail2ban/fail2ban"
+
+export FAIL2BAN_IPTABLES_CF="/etc/fail2ban/action.d/iptables-multiport.conf"
