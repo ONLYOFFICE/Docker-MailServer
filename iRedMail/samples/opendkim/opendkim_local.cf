@@ -1,0 +1,39 @@
+# Specifies the path to the process ID file.
+PidFile /var/run/opendkim/opendkim.pid
+	
+# Selects operating modes. Valid modes are s (sign) and v (verify). Default is v.
+# Must be changed to s (sign only) or sv (sign and verify) in order to sign outgoing
+# messages.
+Mode sv
+	
+# Log activity to the system log.
+Syslog yes
+	
+# Log additional entries indicating successful signing or verification of messages.
+SyslogSuccess yes
+
+# If logging is enabled, include detailed logging about why or why not a message was
+# signed or verified. This causes an increase in the amount of log data generated
+# for each message, so set this to No (or comment it out) if it gets too noisy.
+LogWhy yes
+
+# Attempt to become the specified user before starting operations.
+UserID opendkim:opendkim
+
+# Create a socket through which your MTA can communicate.
+Socket local:/var/spool/postfix/var/run/opendkim/opendkim.sock
+
+# Required to use local socket with MTAs that access the socket as a non-
+# privileged user (e.g. Postfix)
+Umask 002
+
+# Selects the canonicalization method(s) to be used when signing messages.
+Canonicalization relaxed/relaxed
+
+# Defines the name of the selector to be used when signing messages.
+Selector dkim
+
+# Specifies the minimum number of key bits for acceptable keys and signatures.
+MinimumKeyBits 1024
+
+AutoRestart Yes

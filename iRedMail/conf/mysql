@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Variables for MySQL database server and related.
+# MYSQL_SERVER and MYSQL_SERVER_PORT are defined in conf/global.
+# SQL_SERVER and SQL_SERVER_PORT are defined in dialog/config_via_dialog.sh.
+
+export MYSQL_MY_CNF='/etc/my.cnf'
+
+# MySQL config file.
+if [ X"${DISTRO_VERSION}" == X'6' ]; then
+    export MYSQL_RC_SCRIPT_NAME='mysqld'
+else
+    export MYSQL_RC_SCRIPT_NAME='mariadb'
+fi
+
+export MYSQLD_RC_SCRIPT="${DIR_RC_SCRIPTS}/${MYSQL_RC_SCRIPT_NAME}"
+export MYSQL_INIT_SQL="${RUNTIME_DIR}/mysql_init.sql"
+export MYSQL_VMAIL_SQL="${RUNTIME_DIR}/mysql_vmail.sql"
+
+# SQL structure of MySQL vmail database.
+export MYSQL_VMAIL_STRUCTURE_SAMPLE="${SAMPLE_DIR}/iredmail.mysql"
+
+export MYSQL_BACKUP_DATABASES="${MYSQL_BACKUP_DATABASES} ${VMAIL_DB}"
+
+# A temporary file to store MySQL root password to avoid MySQL client warning:
+# "Warning: Using a password on the command line interface can be insecure."
+# File will be removed automatically after iRedMail installation.
+export MYSQL_DEFAULTS_FILE_ROOT="${ROOTDIR}/.mysql-root-defaults-file"
+export MYSQL_CLIENT_ROOT="mysql --defaults-file=${MYSQL_DEFAULTS_FILE_ROOT}"

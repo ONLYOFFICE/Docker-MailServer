@@ -1,0 +1,516 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+ECHO_INFO()
+{
+    if [ X"$1" == X"-n" ]; then
+        shift 1
+        echo -ne "${_INFO_FLAG} $@"
+    else
+        echo -e "${_INFO_FLAG} $@"
+    fi
+    echo -e "${_INFO_FLAG} $@" >> ${INSTALL_LOG}
+}
+
+ECHO_SKIP()
+{
+    echo -e "${_SKIP_FLAG} $@"
+    echo -e "${_SKIP_FLAG} $@" >> ${INSTALL_LOG}
+}
+
+ECHO_QUESTION()
+{
+    if [ X"$1" == X"-n" ]; then
+        shift 1
+        echo -ne "${_QUESTION_FLAG} $@"
+    else
+        echo -e "${_QUESTION_FLAG} $@"
+    fi
+}
+
+ECHO_ERROR()
+{
+    echo -e "${_ERROR_FLAG} $@"
+    echo -e "${_ERROR_FLAG} $@" >> ${INSTALL_LOG}
+}
+
+ECHO_DEBUG()
+{
+    echo -e "${_DEBUG_FLAG} $@" >> ${INSTALL_LOG}
+}
+
+read_setting()
+{
+    answer="${1}"
+    if [ ! -z "${answer}" ]; then
+        ANSWER="${answer}"
+        echo ${ANSWER}
+    else
+        read ANSWER
+    fi
+}
+
+backup_file()
+{
+    # Usage: backup_file file1 [file2 file3 ... fileN]
+    if [ X"$#" != X"0" ]; then
+        for conf_file in $@; do
+            if [ -f ${conf_file} ]; then
+                if [ X"${IREDMAIL_DEBUG}" == X"YES" ]; then
+                    echo -e "${_BACKUP_FLAG} ${conf_file} -> $(basename ${conf_file}).${DATE}."
+                fi
+
+                cp -f ${conf_file} ${conf_file}.${DATE}
+            else
+                :
+            fi
+        done
+    else
+        :
+    fi
+}
+
+check_user()
+{
+    # Check special user privilege to execute this script.
+    if [ X"$(id -u)" != X"$(id -u ${1})" ]; then
+        ECHO_ERROR "Please run this script as user: ${1}."
+        exit 255
+    else
+        if [ X"$(id -u)" == X"0" ]; then
+            export PATH="/usr/kerberos/sbin:/usr/kerberos/bin:/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin"
+        else
+            :
+        fi
+    fi
+}
+
+check_hostname()
+{
+    echo ${HOSTNAME} | grep '\.' &>/dev/null
+    [ X"$?" != X"0" ] && \
+        ECHO_ERROR "Please configure a fully qualified domain name (FQDN) in /etc/hosts before we go further.\n\nExample:\n\n127.0.0.1   mail.iredmail.org mail localhost\n" && \
+        exit 255
+}
+
+check_pkg()
+{
+    # Usage: check_pkg <command> <package>
+    # It means: <package> owns <command>
+    cmd="$1"
+    pkg="$2"
+
+    for i in $(echo $PATH|sed 's/:/ /g'); do
+        [ -x $i/${cmd} ] && export HAS_CMD='YES' && break
+    done
+
+    if [ X"${HAS_CMD}" != X'YES' ]; then
+        ECHO_INFO "Install package: ${pkg}"
+        eval ${install_pkg} ${pkg}
+        if [ X"$?" != X"0" ]; then
+            ECHO_ERROR "Please install package ${pkg} first." && exit 255
+        fi
+    fi
+
+    unset HAS_CMD
+}
+
+check_runtime_dir() {
+    [ -d ${RUNTIME_DIR} ] || mkdir -p ${RUNTIME_DIR}
+
+    # Cleanup
+    rm -f ${RUNTIME_DIR}/.pkg_install_failed &>/dev/null
+}
+
+# Check necessery privileges/files/dirs.
+check_env()
+{
+    check_runtime_dir
+
+    # Check user privilege.
+    check_user root
+
+    # Check FQDN hostname.
+    check_hostname
+
+    ECHO_INFO -n "Checking configuration file: ${IREDMAIL_CONFIG_FILE} ..."
+
+    grep '^#EOF$' ${IREDMAIL_CONFIG_FILE} >/dev/null
+    if [ X"$?" == X"0" ]; then
+        echo -e " [FOUND]"
+        
+        # Check installation status.
+        # After each component installation was completed, there
+        # should be a variable in ${STATUS_FILE}, e.g.
+        #
+        #   export STATUS_PHP_INSTALLATION='DONE'
+        #   export STATUS_PHP_CONFIGURATION='DONE'
+        #
+        if [ -e ${STATUS_FILE} ]; then
+            ECHO_INFO "Import installation process status from file: ${STATUS_FILE}."
+            . ${STATUS_FILE}
+        else
+            echo '' > ${STATUS_FILE}
+        fi
+
+        # Initialize tip file.
+        if [ ! -e ${TIP_FILE} ]; then
+            cat > ${TIP_FILE} <<EOF
+${CONF_MSG}
+EOF
+        else
+            :
+        fi
+
+    else
+        echo -e "\tFound, but not finished."
+        exit 255
+    fi    
+}
+
+extract_pkg()
+{
+    if [ X"$2" = X"" ]; then
+        DST='.'
+    else
+        DST="$2"
+    fi
+
+    if echo $1 | grep '.tar.gz$' &>/dev/null; then
+        ECHO_DEBUG "Extracting: $1 -> ${DST}"
+        tar zxf $1 -C $DST
+    elif echo $1 | grep '.tgz$' &>/dev/null; then
+        ECHO_DEBUG "Extracting: $1 -> ${DST}"
+        tar zxf $1 -C $DST
+    elif echo $1 | grep '.tar.bz2$' &>/dev/null; then
+        # Install bzip2 first.
+        check_pkg ${BIN_BZIP2} ${PKG_BZIP2}
+
+        ECHO_DEBUG "Extracting: $1 -> ${DST}"
+        tar xjf $1 -C $DST
+    else
+        ECHO_ERROR "Unknown archive format."
+    fi
+}
+
+check_status_before_run()
+{
+    # If function was successfully executed, this function will write one line
+    # in $STATUS_FILE:
+    #
+    #   export status_[function_name]='DONE'
+    #
+    function_name="${1}"
+    function_status_name="status_${function_name}"
+    function_status_value="$(eval echo \$${function_status_name})"
+    if [ X"${function_status_value}" == X"DONE" ]; then
+        ECHO_SKIP "Function: $1."
+    else
+        $function_name
+        #if [ X"$?" == X'0' ]; then
+        #    echo "export ${function_status_name}='DONE'" >> ${STATUS_FILE}
+        #fi
+    fi
+}
+
+hash_domain()
+{
+    # Usage: hash_domain domain
+    domain="$( echo $1 | tr [A-Z] [a-z] )"
+
+    # Different domain style: hashed, normal.
+    #if [ X"${MAILDIR_STYLE}" == X"hashed" ]; then
+    #    length="$(echo ${domain} | wc -L)"
+    #    str1="$(echo ${domain} | cut -c1)"
+    #    str2="$(echo ${domain} | cut -c2)"
+
+    #    if [ X"${length}" == X"1" ]; then
+    #        str2="${str1}"
+    #    elif [ X"${length}" == X"2" ]; then
+    #        str2="${str2}"
+    #    else
+    #        :
+    #    fi
+
+        # Use mbox, will be changed later.
+    #    domain="${str1}/${str1}${str2}/${domain}"
+    #else
+        # Use mbox, will be changed later.
+    #    domain="${domain}"
+    #fi
+
+    echo ${domain}
+}
+
+# Hash maildir string.
+hash_maildir()
+{
+    # Usage: hash_maildir username
+    username="$( echo $1 | tr [A-Z] [a-z] )"
+
+    # Different maildir style: hashed, normal.
+    if [ X"${MAILDIR_STYLE}" == X"hashed" ]; then
+        str1="$(echo ${username} | cut -c1)"
+        str2="$(echo ${username} | cut -c2)"
+        str3="$(echo ${username} | cut -c3)"
+
+        if [ X"${username}" == X"${str1}" ]; then
+            # Username has only one character
+            str2="${str1}"
+            str3="${str1}"
+        elif [ X"${username}" == X"${str1}${str2}" ]; then
+            str3="${str2}"
+        else
+            :
+        fi
+
+        # Use mbox, will be changed later.
+        maildir="${str1}/${str2}/${str3}/${username}-${DATE}"
+    else
+        # Use mbox, will be changed later.
+        maildir="${username}-${DATE}"
+    fi
+
+    # For maildir format.
+    [ X"${MAILBOX_FORMAT}" == X"Maildir" ] && maildir="${maildir}/"
+
+    echo ${maildir}
+}
+
+# Service control: enable, disable, [start | stop | restart]
+service_control()
+{
+    action="$1"
+    shift 1
+    service="$1"    # start, stop, restart
+    services="$@"   # enable, disable
+
+    if [ X"${KERNEL_NAME}" == X'LINUX' ]; then
+        for srv in ${services}; do
+            ECHO_DEBUG "Service control: $action $srv."
+
+            if [ X"${USE_SYSTEMD}" == X'YES' ]; then
+                systemctl $action $srv
+            else
+                rc_script="${DIR_RC_SCRIPTS}/$srv"
+
+                if [ X"${DISTRO}" == X'RHEL' ]; then
+                    if [ X"${action}" == X'enable' ]; then
+                        /sbin/chkconfig --level 345 $srv on
+                    elif [ X"${action}" == X'disable' ]; then
+                        /sbin/chkconfig --level 345 $srv off
+                    else
+                        # start, stop, restart
+                        ${rc_script} $action
+                    fi
+                elif [ X"${DISTRO}" == X'DEBIAN' -o X"${DISTRO}" == X'UBUNTU' ]; then
+                    if [ X"${action}" == X'enable' ]; then
+                        update-rc.d $srv defaults
+                    elif [ X"${action}" == X'disable' ]; then
+                        update-rc.d -f $srv remove
+                    else
+                        ${rc_script} $action
+                    fi
+                fi
+            fi
+        done
+    elif [ X"${KERNEL_NAME}" == X'FREEBSD' ]; then
+        if [ X"${action}" == X'enable' ]; then
+            [ -f /etc/rc.conf ] || touch /etc/rc.conf
+            if [ X"$#" == X'2' ]; then
+                var="${1}"
+                value="${2}"
+                final_option="${var}='${value}'"
+                comment_mark="# ${PROG_NAME}-${var}"
+                if ! grep "^${comment_mark}$" /etc/rc.conf &>/dev/null; then
+                    ECHO_DEBUG "Add setting in /etc/rc.conf: ${final_option}"
+                    echo "${comment_mark}" >> /etc/rc.conf
+                    echo "${final_option}" >> /etc/rc.conf
+                else
+                    ECHO_DEBUG "Skip adding setting in /etc/rc.conf: ${final_option}"
+                fi
+            fi
+        elif [ X"${action}" == X'disable' ]; then
+            # Already handled in functions/*.sh.
+            :
+        else
+            ${DIR_RC_SCRIPTS}/${service} $action >/dev/null
+        fi
+    elif [ X"${KERNEL_NAME}" == X'OPENBSD' ]; then
+        if [ X"${action}" == X'enable' ]; then
+            echo "pkg_scripts='${services}'" >> ${RC_CONF_LOCAL}
+        elif [ X"${action}" == X'disable' ]; then
+            # No need to touch files to disable services.
+            :
+        else
+            ${DIR_RC_SCRIPTS}/${service} $action
+        fi
+    fi
+}
+
+generate_password_hash()
+{
+    scheme="${1}"
+    password="${2}"
+    python ${TOOLS_DIR}/generate_password_hash.py ${scheme} ${password}
+}
+
+# Create SSL certs/private files.
+generate_ssl_keys()
+{
+    ECHO_INFO "Create self-signed SSL certification files (${SSL_KEY_SIZE} bits)."
+
+    # Create necessary directories.
+    mkdir -p ${SSL_KEY_DIR} ${SSL_CERT_DIR} &>/dev/null
+
+    openssl req \
+        -x509 -nodes -days 3650 -newkey rsa:${SSL_KEY_SIZE} -sha256 \
+        -subj "/C=${TLS_COUNTRY}/ST=${TLS_STATE}/L=${TLS_CITY}/O=${TLS_COMPANY}/OU=${TLS_DEPARTMENT}/CN=${TLS_HOSTNAME}/emailAddress=${TLS_ADMIN}/" \
+        -out ${SSL_CERT_FILE} -keyout ${SSL_KEY_FILE} &>/dev/null
+
+    cp -f ${SSL_CERT_FILE} ${SSL_CA_BUNDLE_FILE}
+
+    # Set correct file permission.
+    chmod +r ${SSL_CERT_FILE}
+    chmod +r ${SSL_KEY_FILE}
+    chmod +r ${SSL_CA_BUNDLE_FILE}
+
+    # Fix 'The Logjam Attack'. References:
+    #   - https://weakdh.org/
+    #   - https://weakdh.org/sysadmin.html
+    ECHO_INFO "Generate a strong, unique Diffie Hellman Group with openssl, please wait."
+    openssl dhparam -out ${SSL_DHPARAM_FILE} 2048 5>&1 &>/dev/null | tee ${INSTALL_LOG}
+
+    cat >> ${TIP_FILE} <<EOF
+
+SSL cert keys (size: ${SSL_KEY_SIZE}):
+    - ${SSL_CERT_FILE}
+    - ${SSL_KEY_FILE}
+    - ${SSL_CA_BUNDLE_FILE}
+
+EOF
+}
+
+# Add alias entry in Postfix /etc/postfix/aliases.
+add_postfix_alias()
+{
+    # Usage: add_postfix_alias nobody root
+    # File /path/to/aliases will be created if not exist.
+    export alias_orig="${1}"
+    export alias_dest="${2}"
+
+    if [ ! -f ${POSTFIX_FILE_ALIASES} ]; then
+        if [ -f /etc/aliases ]; then
+            cp -f /etc/aliases ${POSTFIX_FILE_ALIASES}
+        else
+            # Create an empty file
+            touch ${POSTFIX_FILE_ALIASES}
+        fi
+    fi
+
+    # If alias_orig exists, comment it out
+    if grep "^${alias_orig}:" ${POSTFIX_FILE_ALIASES} &>/dev/null; then
+        perl -pi -e 's/^($ENV{alias_orig}:.*)/#${1}/' ${POSTFIX_FILE_ALIASES}
+    fi
+
+    # Add new alias
+    echo "${alias_orig}: ${alias_dest}" >> ${POSTFIX_FILE_ALIASES}
+
+    postalias hash:${POSTFIX_FILE_ALIASES} &>/dev/null
+    unset alias_orig
+    unset alias_dest
+}
+
+# Install/Remove binary packages on RHEL/CentOS.
+install_pkg_rhel()
+{
+    ECHO_INFO "Installing package(s): $@"
+    ${YUM} -y --disablerepo=rpmforge,ius,remi install $@
+
+    # Leave a mark if package installation failed.
+    if [ X"$?" != X'0' ]; then
+        echo '' > ${RUNTIME_DIR}/.pkg_install_failed
+    fi
+}
+
+remove_pkg_rhel()
+{
+    ECHO_INFO "Removing package(s): $@"
+    ${YUM} remove -y $@
+    if [ X"$?" != X"0" ]; then
+        ECHO_ERROR "Package removed failed, please check the terminal output."
+        echo '' > ${RUNTIME_DIR}/.pkg_remove_failed
+    fi
+}
+
+# Install/Remove binary packages on Debian/Ubuntu.
+install_pkg_debian()
+{
+    ECHO_INFO "Installing package(s): $@"
+    ${APTGET} install -y --force-yes $@
+
+    # Leave a mark if package installation failed.
+    if [ X"$?" != X"0" ]; then
+        echo '' > ${RUNTIME_DIR}/.pkg_install_failed
+    fi
+}
+
+remove_pkg_debian()
+{
+    ECHO_INFO "Removing package(s): $@"
+    ${APTGET} purge -y $@
+    if [ X"$?" != X"0" ]; then
+        ECHO_ERROR "Package removed failed, please check the terminal output."
+        echo '' > ${RUNTIME_DIR}/.pkg_remove_failed
+    fi
+}
+
+install_pkg_openbsd()
+{
+    ECHO_INFO "PKG_PATH: ${PKG_PATH}"
+    ECHO_INFO "Installing packages (pkg_add -i -m): $@"
+
+    pkg_add -i -m $@
+
+    # Leave a mark if package installation failed.
+    if [ X"$?" != X"0" ]; then
+        echo '' > ${RUNTIME_DIR}/.pkg_install_failed
+    fi
+}
+freebsd_add_make_conf()
+{
+    # USAGE: freebsd_add_make_conf VAR VALUE
+    [ -f ${FREEBSD_MAKE_CONF} ] || touch ${FREEBSD_MAKE_CONF}
+    if [ X"$#" == X'2' ]; then
+        var="${1}"
+        value="${2}"
+        final_option="${1}=${2}"
+        comment_mark="# ${PROG_NAME}-${var}"
+        if ! grep "^${comment_mark}$" ${FREEBSD_MAKE_CONF} &>/dev/null; then
+            ECHO_DEBUG "Add make option in ${FREEBSD_MAKE_CONF}: ${final_option}"
+            echo "${comment_mark}" >> ${FREEBSD_MAKE_CONF}
+            echo "${final_option}" >> ${FREEBSD_MAKE_CONF}
+        else
+            ECHO_DEBUG "Skip adding option in ${FREEBSD_MAKE_CONF}: ${final_option}"
+        fi
+    fi
+}

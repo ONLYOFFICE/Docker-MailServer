@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+export OPENDKIM_VERSION='2.9.2'
+export OPENDKIM_TARBALL="opendkim-${OPENDKIM_VERSION}.rpm"
+export OPENDBX_VERSION='1.4.6'
+export OPENDBX_VERSION="opendbx-${OPENDBX_VERSION}.rpm"
+
+export OPENDKIM_USER='opendkim'
+export OPENDKIM_GROUP="opendkim"
+export OPENDKIM_USER_HOME='/var/run/opendkim'
+
+export OPENDKIM_DIR='/etc/opendkim'
+export OPENDKIM_KEYS_DIR="${OPENDKIM_DIR}/keys"
+export OPENDKIM_POSTFIX_RUN_DIR='/var/spool/postfix/var/run/opendkim'
+
+export OPENDKIM_INIT="${SAMPLE_DIR}/opendkim/opendkim"
+export OPENDKIM_DB_MYSQL_TMPL="${SAMPLE_DIR}/opendkim/opendkim.mysql"
+
+export OPENDKIM_SAMPLE_LOCAL_CF="${SAMPLE_DIR}/opendkim/opendkim_local.cf"
+export OPENDKIM_LOCAL_CF="/etc/opendkim.conf"

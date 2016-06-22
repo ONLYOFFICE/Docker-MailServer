@@ -1,6 +1,0 @@
-user        = vmail
-password    = NSep2RRC7vzN9k6dW5bnc07fTLDEW7
-hosts       = 127.0.0.1
-port        = 3306
-dbname      = vmail
-query       = SELECT distinct m.username FROM mailbox m inner join domain d on m.domain = d.domain inner join alias a on a.domain = d.domain and (a.goto like concat('%%',m.username,'%%') or a.address = m.username) WHERE m.domain = '%d' AND a.address = '%s' AND m.enablesmtp = 1 AND m.active = 1 AND d.backupmx = 0 AND d.active = 1

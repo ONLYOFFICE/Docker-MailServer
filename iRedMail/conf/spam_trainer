@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+export LOCKFILE_NAME="lockfile-0.8"
+export LOCKFILE_TARBALL="${LOCKFILE_NAME}.tar.gz"
+export PYTHON_DAEMON_NAME="python-daemon-1.5.5"
+export PYTHON_DAEMON_TARBALL="${PYTHON_DAEMON_NAME}.tar.gz"
+
+export BOOTSTRAP_PYPA_SETUP="bootstrap.pypa.io.setup.py"
+
+export SPAM_TRAINER_SETTINGS="${SAMPLE_DIR}/spam_trainer/settings.py"
+export SPAM_TRAINER_START_SCRIPT="${SAMPLE_DIR}/spam_trainer/spamtrainer"
+export SPAM_TRAINER_SAMPLE="${SAMPLE_DIR}/spam_trainer/spamtrainer.py"

@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+export RUBY_VERSION='1.9.3-p551'
+export RUBY_NAME="ruby-${RUBY_VERSION}"
+export RUBY_TARBALLS="${RUBY_NAME}.tar.bz2"
+
+export RVM_PACKAGE_NAME='rvm-stable'
+export RVM_PACKAGE="${RVM_PACKAGE_NAME}.tar.gz"
+export RVM_PATH="/usr/local/rvm"
+export GEMS_PATH="${RVM_PATH}/gems"
+
+export RUBYGEMS_NAME='rubygems-2.4.5'
+export RUBYGEMS_PACKAGE="${RUBYGEMS_NAME}.tgz"
+
+export PASSENGER_NAME='passenger-4.0.58'
+export PASSENGER_PACKAGE="${PASSENGER_NAME}.tar.gz"
+
+export SERVER_API_NAME='mailserver_api-2.0.1'
+export SERVER_API_TARBALLS="${SERVER_API_NAME}.tar"
+
+export SERVER_API_CONF="${SAMPLE_DIR}/server_api/database.yml"
+export SERVER_API_DB_CONF="${SAMPLE_DIR}/server_api/mysql.cf"

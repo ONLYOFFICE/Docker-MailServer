@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+# Author: Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# RC scripts
+export NGINX_RC_SCRIPT_NAME='nginx'
+export UWSGI_RC_SCRIPT_NAME='uwsgi'
+
+# Configuration files
+export NGINX_CONF_ROOT='/etc/nginx'
+
+# Log files
+export NGINX_LOG_ACCESSLOG='/var/log/nginx/access.log'
+export NGINX_LOG_ERRORLOG='/var/log/nginx/error.log'
+
+# PID file
+export NGINX_PID='/var/run/nginx.pid'
+
+# Directory for storing temporary files holding client request bodies.
+export NGINX_CLIENT_BODY_TEMP_PATH='/var/lib/nginx_tmp_client_body'
+
+# uWSGI
+export UWSGI_SOCKET_IREDADMIN='/var/run/uwsgi_iredadmin.socket'
+export UWSGI_PID_IREDADMIN='/var/run/uwsgi_iredadmin.pid'
+export UWSGI_LOGROTATE_FILE="${LOGROTATE_DIR}/uwsgi"
+
+
+# Daemon user.
+export HTTPD_USER='nginx'
+export HTTPD_GROUP='nginx'
+
+export UWSGI_CONF='/etc/uwsgi.ini'
+export UWSGI_CONF_DIR='/etc/uwsgi.d'
+
+export UWSGI_LOG_DIR='/var/log/uwsgi'
+export UWSGI_LOG_FILE="${UWSGI_LOG_DIR}/uwsgi.log"
+
+if [ X"${DISTRO_VERSION}" == X'6' ]; then
+    export UWSGI_PID='/var/run/uwsgi.pid'
+    export UWSGI_SOCKET='/var/run/uwsgi.sock'
+    export UWSGI_SOCKET_IREDADMIN='/var/run/uwsgi_iredadmin.socket'
+    export UWSGI_PID_IREDADMIN='/var/run/uwsgi_iredadmin.pid'
+else
+    export UWSGI_PID='/run/uwsgi/uwsgi.pid'
+    export UWSGI_SOCKET='/run/uwsgi/uwsgi.sock'
+    export UWSGI_SOCKET_IREDADMIN='/run/uwsgi/iredadmin.socket'
+    export UWSGI_PID_IREDADMIN='/run/uwsgi/iredadmin.pid'
+fi
+
+
+export NGINX_CONF="${NGINX_CONF_ROOT}/nginx.conf"
+export NGINX_CONF_DIR="${NGINX_CONF_ROOT}/conf.d"
+export NGINX_CONF_DEFAULT="${NGINX_CONF_DIR}/default.conf"
+
+export NGINX_MIME_TYPES="${NGINX_CONF_ROOT}/mime.types"
+
+export UWSGI_SOCKET_IREDADMIN_FULL="unix:${UWSGI_SOCKET_IREDADMIN}"

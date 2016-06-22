@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# Author: Zhang Huangbin <zhb _at_ iredmail.org>
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Variables for Postfix and related.
+
+#
+# You do *NOT* need to modify them.
+#
+# ---- Postfix ----
+export POSTFIX_DAEMON_USER='postfix'
+export POSTFIX_DAEMON_GROUP='postfix'
+
+export POSTFIX_ROOTDIR='/etc/postfix'
+export POSTFIX_RC_SCRIPT_NAME='postfix'
+
+# Log file
+export MAILLOG='/var/log/maillog'
+
+# You do *NOT* need to modify them.
+export POSTFIX_CHROOT_DIR='/var/spool/postfix'
+
+export POSTFIX_FILE_MAIN_CF="${POSTFIX_ROOTDIR}/main.cf"
+export POSTFIX_FILE_MASTER_CF="${POSTFIX_ROOTDIR}/master.cf"
+export POSTFIX_FILE_ALIASES="${POSTFIX_ROOTDIR}/aliases"
+export POSTFIX_FILE_HEADER_CHECKS="${POSTFIX_ROOTDIR}/header_checks.pcre"
+export POSTFIX_FILE_HELO_ACCESS="${POSTFIX_ROOTDIR}/helo_access.pcre"
+
+# Default transport or LDA (local deliver agent).
+# We use dovecot deliver program as default transport.
+export TRANSPORT='dovecot'
+
+# Set 'message_size_limit', in 'byte'. Default is 10M.
+export MESSAGE_SIZE_LIMIT='51200000'
+
+# Limit on the number of recipients allowed in RCPT TO commands for each message. Default is 1000
+export RECIPIENTS_NUMBER='50'
+
+# MYSQL configuration files.
+export POSTFIX_LOOKUP_DIR="${POSTFIX_ROOTDIR}/mysql"
+
+# MySQL lookup.
+export mysql_virtual_mailbox_domains_cf="${POSTFIX_LOOKUP_DIR}/virtual_mailbox_domains.cf"
+export mysql_transport_maps_user_cf="${POSTFIX_LOOKUP_DIR}/transport_maps_user.cf"
+export mysql_transport_maps_domain_cf="${POSTFIX_LOOKUP_DIR}/transport_maps_domain.cf"
+export mysql_virtual_mailbox_maps_cf="${POSTFIX_LOOKUP_DIR}/virtual_mailbox_maps.cf"
+export mysql_virtual_alias_maps_cf="${POSTFIX_LOOKUP_DIR}/virtual_alias_maps.cf"
+export mysql_catchall_maps_cf="${POSTFIX_LOOKUP_DIR}/catchall_maps.cf"
+export mysql_domain_alias_maps_cf="${POSTFIX_LOOKUP_DIR}/domain_alias_maps.cf"
+export mysql_domain_alias_catchall_maps_cf="${POSTFIX_LOOKUP_DIR}/domain_alias_catchall_maps.cf"
+export mysql_sender_login_maps_cf="${POSTFIX_LOOKUP_DIR}/sender_login_maps.cf"
+export mysql_sender_bcc_maps_domain_cf="${POSTFIX_LOOKUP_DIR}/sender_bcc_maps_domain.cf"
+export mysql_sender_bcc_maps_user_cf="${POSTFIX_LOOKUP_DIR}/sender_bcc_maps_user.cf"
+export mysql_recipient_bcc_maps_domain_cf="${POSTFIX_LOOKUP_DIR}/recipient_bcc_maps_domain.cf"
+export mysql_recipient_bcc_maps_user_cf="${POSTFIX_LOOKUP_DIR}/recipient_bcc_maps_user.cf"
+export mysql_relay_domains_cf="${POSTFIX_LOOKUP_DIR}/relay_domains.cf"

@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+# Author:   Zhang Huangbin (zhb _at_ iredmail.org)
+
+#---------------------------------------------------------------------
+# This file is part of iRedMail, which is an open source mail server
+# solution for Red Hat(R) Enterprise Linux, CentOS, Debian and Ubuntu.
+#
+# iRedMail is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# iRedMail is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with iRedMail.  If not, see <http://www.gnu.org/licenses/>.
+#---------------------------------------------------------------------
+
+# Warning: Please source 'conf/postfix' first.
+
+export AMAVISD_SYS_USER='amavis'
+export AMAVISD_SYS_GROUP='amavis'
+export AMAVISD_QUARANTINE_PORT='9998'
+export AMAVISD_LOGFILE='/var/log/amavisd.log'
+export AMAVISD_LOGROTATE_FILE="${LOGROTATE_DIR}/amavisd"
+export AMAVISD_DKIM_SELECTOR='dkim'
+export AMAVISD_RC_SCRIPT_NAME='amavisd'
+
+# Num of pre-forked children.
+export AMAVISD_MAX_SERVERS='10'
+
+export AMAVISD_DKIM_DIR='/var/lib/dkim'
+export AMAVISD_VIRUSMAILS_DIR='/var/virusmails'
+
+# Database used to store incoming & outgoing email related information.
+export MYSQL_BACKUP_DATABASES="${MYSQL_BACKUP_DATABASES} ${AMAVISD_DB_NAME}"
+
+# Altermime.
+export ALTERMIME_BIN='/usr/bin/altermime'
+
+export AMAVISD_BIN='/usr/sbin/amavisd'
+export AMAVISD_MYHOME='/var/spool/amavisd'
+export AMAVISD_QUARANTINEDIR="${AMAVISD_MYHOME}/quarantine"
+export AMAVISD_TEMPDIR="${AMAVISD_MYHOME}/tmp"
+
+# RHEL/CENTOS 6
+export AMAVISD_CONF='/etc/amavisd/amavisd.conf'
+export AMAVISD_VIRUSMAILS_DIR="${AMAVISD_QUARANTINEDIR}"
+
+export AMAVISD_DKIM_CONF="${AMAVISD_CONF}"
+
+export AMAVISD_DB_MYSQL_TMPL="${SAMPLE_DIR}/amavisd/amavisd.mysql"
+
+# Syslog setting, 'YES' or 'NO'
+export AMAVISD_SEPERATE_LOG='NO'
+
+# mynetworks
+export AMAVISD_MYNETWORKS='127.0.0.0/8'
+if [ X"${LOCAL_ADDRESS}" != X'127.0.0.1' ]; then
+    export AMAVISD_MYNETWORKS="${AMAVISD_MYNETWORKS},${LOCAL_ADDRESS}"
+fi
