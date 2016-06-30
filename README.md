@@ -30,7 +30,7 @@ Integrated with ONLYOFFICE Community Server, Mail Server allows to:
 * **Swap file**: at least 2 GB
 * **HDD**: at least 2 GB of free space
 * **Distributive**: 64-bit Red Hat, CentOS or other compatible distributive with kernel version 3.8 or later, 64-bit Debian, Ubuntu or other compatible distributive with kernel version 3.8 or later
-* **Docker**: version 1.4.1 or later
+* **Docker**: version 1.9.0 or later
 
 ## Running Docker Image
 
@@ -51,7 +51,7 @@ The following DNS records are required:
     
 ```bash
 sudo docker run --privileged -i -t -d -p 25:25 -p 143:143 -p 587:587 \
--v /opt/docker/Data:/etc/pki/tls/mailserver -h yourdomain.com onlyoffice/mailserver
+-v /app/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver -h yourdomain.com onlyoffice/mailserver
 ```
 	
 Where `yourdomain.com` is your own domain name.
@@ -60,13 +60,13 @@ Where `yourdomain.com` is your own domain name.
 ## Installing the SSL Certificates
 
 The self-signed certificates for your domain will be created by default while running the docker container. If you want to use CA sertified certificates,
-you will need to rename them and copy into the /opt/onlyoffice/Data directory before running the image. The following files are required:
+you will need to rename them and copy into the /app/onlyoffice/MailServer/data/certs directory before running the image. The following files are required:
 
-	/opt/docker/Data/mail.onlyoffice.key
-	/opt/docker/Data/mail.onlyoffice.crt
-	/opt/docker/Data/mail.onlyoffice.ca-bundle
+	/app/onlyoffice/MailServer/data/certs/mail.onlyoffice.key
+	/app/onlyoffice/MailServer/data/certs/mail.onlyoffice.crt
+	/app/onlyoffice/MailServer/data/certs/mail.onlyoffice.ca-bundle
 
-You can copy the SSL certificates into the /opt/onlyoffice/Data directory after running the image. But in this case you will need to restart the docker container.
+You can copy the SSL certificates into the /app/onlyoffice/MailServer/data/certs directory after running the image. But in this case you will need to restart the docker container.
 
 ### Available Configuration Parameters
 
@@ -89,41 +89,77 @@ All the data are stored in the specially-designated directories, **data volumes*
 To get access to your data from outside the container, you need to mount the volumes. It can be done by specifying the '-v' option in the docker run command.
 
     sudo docker run --privileged -i -t -d -p 25:25 -p 143:143 -p 587:587 \
-        -v /opt/onlyoffice/Logs:/var/log  \
-        -v /opt/onlyoffice/MySQL:/var/lib/mysql  \
-        -v /opt/onlyoffice/VMail:/var/vmail  \
-        -v /opt/onlyoffice/MailServer:/etc/pki/tls/mailserver -h yourdomain.com onlyoffice/mailserver
+        -v /app/onlyoffice/MailServer/logs:/var/log  \
+        -v /app/onlyoffice/MailServer/mysql:/var/lib/mysql  \
+        -v /app/onlyoffice/MailServer/data:/var/vmail  \
+        -v /app/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver -h yourdomain.com onlyoffice/mailserver
 
 Storing the data on the host machine allows you to easily update ONLYOFFICE once the new version is released without losing your data.
 
 ## Installing ONLYOFFICE Mail Server integrated with Document and Community Servers
 
-ONLYOFFICE Mail Server is a part of ONLYOFFICE Free Edition that comprises also Document Server and Community Server. To install them, follow these easy steps:
+ONLYOFFICE Mail Server is a part of ONLYOFFICE Community Edition that comprises also Document Server and Community Server. To install them, follow these easy steps:
 
-**STEP 1**: Installing ONLYOFFICE Document Server.
-
-```bash
-sudo docker run -i -t -d  --name onlyoffice-document-server onlyoffice/documentserver
-```
-
-**STEP 2**: Installing ONLYOFFICE Mail Server. 
+**STEP 1**: Create the 'onlyoffice' network.
 
 ```bash
-sudo docker run --privileged -i -t -d --name onlyoffice-mail-server -p 25:25 -p 143:143 -p 587:587 \
--h yourdomain.com onlyoffice/mailserver
+docker network create --driver bridge onlyoffice
 ```
- Where `yourdomain.com` is your own domain name.
- 
-**STEP 3**: Installing ONLYOFFICE Community Server
+Than launch containers on it using the 'docker run --net onlyoffice' option:
+
+**STEP 1**: Install ONLYOFFICE Document Server.
 
 ```bash
-sudo docker run -i -t -d -p 80:80 -p 5222:5222 -p 443:443 \
---link onlyoffice-mail-server:mail_server \
---link onlyoffice-document-server:document_server \
- onlyoffice/communityserver
+sudo docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-document-server \
+	-v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data \
+	-v /app/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
+	onlyoffice/documentserver
 ```
 
-Alternatively, you can use [docker-compose](https://docs.docker.com/compose/install "docker-compose") to install the whole ONLYOFFICE Free Edition at once. For the mail server correct work you need to specify its hostname 'yourdomain.com'. Assuming you have docker-compose installed, execute the following command:
+**STEP 2**: Install ONLYOFFICE Mail Server. 
+
+For the mail server correct work you need to specify its hostname 'yourdomain.com'.
+
+```bash
+sudo docker run --net onlyoffice --privileged -i -t -d --restart=always --name onlyoffice-mail-server \
+	-p 25:25 -p 143:143 -p 587:587 \
+	-v /app/onlyoffice/MailServer/data:/var/vmail \
+	-v /app/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver \
+	-v /app/onlyoffice/MailServer/logs:/var/log \
+	-v /app/onlyoffice/MailServer/mysql:/var/lib/mysql \
+	-h yourdomain.com \
+	onlyoffice/mailserver
+```
+
+**STEP 3**: Install ONLYOFFICE Community Server
+
+```bash
+sudo docker run --net onlyoffice -i -t -d -p 80:80 --restart=always --name onlyoffice-community-server \
+	-p 80:80 -p 5222:5222 -p 443:443 \
+	-v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data \
+	-v /app/onlyoffice/CommunityServer/mysql:/var/lib/mysql \
+	-v /app/onlyoffice/CommunityServer/logs:/var/log/onlyoffice \
+	-v /app/onlyoffice/DocumentServer/data:/var/www/onlyoffice/DocumentServerData \
+	-e DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server \
+	-e MAIL_SERVER_DB_HOST=onlyoffice-mail-server \
+	onlyoffice/communityserver
+```
+
+Alternatively, you can use an automatic installation script to install the whole ONLYOFFICE Community Edition at once. For the mail server correct work you need to specify its hostname 'yourdomain.com'.
+
+**STEP 1**: Download the Community Edition Docker script file
+
+```bash
+wget http://download.onlyoffice.com/install/opensource-install.sh
+```
+
+**STEP 2**: Install ONLYOFFICE Community Edition executing the following command:
+
+```bash
+bash opensource-install.sh -md yourdomain.com
+```
+
+Or, use [docker-compose](https://docs.docker.com/compose/install "docker-compose"). For the mail server correct work you need to specify its hostname 'yourdomain.com'. Assuming you have docker-compose installed, execute the following command:
 
 ```bash
 wget https://raw.githubusercontent.com/ONLYOFFICE/Docker-CommunityServer/master/docker-compose.yml
@@ -141,6 +177,6 @@ SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.
 
 ## User Feedback and Support
 
-If you have any problems with or questions about this image, please contact us through a [dev.onlyoffice.org][1].
+If you have any problems with or questions about ONLYOFFICE, please contact us through [dev.onlyoffice.org][1].
 
   [1]: http://dev.onlyoffice.org
