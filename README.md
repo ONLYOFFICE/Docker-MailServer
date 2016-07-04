@@ -134,7 +134,7 @@ sudo docker run --net onlyoffice --privileged -i -t -d --restart=always --name o
 **STEP 3**: Install ONLYOFFICE Community Server
 
 ```bash
-sudo docker run --net onlyoffice -i -t -d -p 80:80 --restart=always --name onlyoffice-community-server \
+sudo docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-community-server \
 	-p 80:80 -p 5222:5222 -p 443:443 \
 	-v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data \
 	-v /app/onlyoffice/CommunityServer/mysql:/var/lib/mysql \
