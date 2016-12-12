@@ -61,7 +61,8 @@ server_api_config()
     -- Import SpamTrainer SQL template
     USE ${VMAIL_DB};
     SOURCE ${SERVER_API_DB_CONF};
-    INSERT INTO global_vars VALUES ('VERSION','${VERSION}');
+    INSERT INTO global_vars VALUES ('VERSION','${VERSION}')
+    ON DUPLICATE KEY UPDATE value='${VERSION}';
 EOF
 
     cd /var/www/html/${SERVER_API_NAME} 
