@@ -65,9 +65,8 @@ server_api_config()
     ON DUPLICATE KEY UPDATE value='${VERSION}';
 EOF
 
-    # moved to run_mailserver.sh
-    # cd /var/www/html/${SERVER_API_NAME} 
-    # ${GEMS_PATH}/${RUBY_NAME}/wrappers/rake api_key:generate
+    cd /var/www/html/${SERVER_API_NAME} 
+    ${GEMS_PATH}/${RUBY_NAME}/wrappers/rake api_key:generate
 
     cat >> ${HTTPD_CONF} <<EOF
 Listen 8081
