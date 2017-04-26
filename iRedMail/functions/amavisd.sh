@@ -403,7 +403,7 @@ EOF
 
     cat >> ${AMAVISD_CONF} <<EOF
 # Listen on specified addresses.
-#\$inet_socket_bind = [ '127.0.0.1', '[::1]' ];
+\$inet_socket_bind = [ '127.0.0.1' ];
 EOF
 
     cat >> ${AMAVISD_CONF} <<EOF
