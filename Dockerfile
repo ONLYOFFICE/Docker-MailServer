@@ -8,12 +8,21 @@ RUN yum -y update && \
     yum clean metadata && \
     sed -i "s/tsflags=nodocs//g" /etc/yum.conf && \
     yum -y --disablerepo=rpmforge,ius,remi install epel-release && \
+	yum -y install wget curl htop nano gcc make && \
+	wget https://www.openssl.org/source/openssl-1.0.2-latest.tar.gz && \
+	tar -zxf openssl-1.0.2-latest.tar.gz && \
+	cd openssl-1.0.2*/ && \
+	./config && \
+	make && \
+	make install && \
+	cd .. && \
+    rm -rf openssl-1.0.2* && \
     yum -y install postfix mysql-server mysql perl-DBD-MySQL mod_auth_mysql && \
     yum -y install php php-common php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt && \
     yum -y install httpd mod_ssl cluebringer dovecot dovecot-pigeonhole dovecot-managesieve && \
     yum -y install amavisd-new clamd clamav-db spamassassin altermime perl-LDAP perl-Mail-SPF unrar && \
     yum -y install python-sqlalchemy python-setuptools MySQL-python  awstats && \
-    yum -y install libopendkim libopendkim-devel mysql-devel readline-devel gcc gcc-c++ sendmail-milter sendmail-devel libbsd-devel && \
+    yum -y install libopendkim libopendkim-devel mysql-devel readline-devel gcc-c++ sendmail-milter sendmail-devel libbsd-devel && \
     yum -y install readline libyaml-devel libffi-devel openssl-devel bison && \
     yum -y install curl-devel httpd-devel sqlite-devel which libtool unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch crond && \
     find /usr/src/iRedMail -type d -name pkgs -prune -o -type f -exec dos2unix {} \; && \
