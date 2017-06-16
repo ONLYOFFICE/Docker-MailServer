@@ -17,6 +17,8 @@ RUN yum -y update && \
 	make install && \
 	cd .. && \
     rm -rf openssl-1.0.2* && \
+    mv /usr/bin/openssl /root/ && \
+    ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl && \
     yum -y install postfix mysql-server mysql perl-DBD-MySQL mod_auth_mysql && \
     yum -y install php php-common php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt && \
     yum -y install httpd mod_ssl cluebringer dovecot dovecot-pigeonhole dovecot-managesieve && \
