@@ -28,8 +28,16 @@ rm /var/run/syslogd.pid
 rm /var/run/cbpolicyd.pid
 rm /var/run/opendkim/opendkim.pid
 
+if [ ${MYSQL_SERVER} != "127.0.0.1" ] || [ ${MYSQL_SERVER} != "localhost" ]; then
+    echo "Waiting for external MySql response"
+
+    while ! mysqladmin ping -h ${MYSQL_SERVER} -P ${MYSQL_SERVER_PORT} -u ${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSW} --silent; do
+          sleep 1
+    done
+else
 # start services
-service mysqld start
+    service mysqld start
+fi
 
 # update rows in 'greylisting_whitelist'
 mysql_generate_defaults_file_root

@@ -54,7 +54,7 @@ LOCAL_MYSQL_SERVER=""
 
 check_env
 
-if [ "$SQL_SERVER" == '127.0.0.1' ]; then
+if [ "$SQL_SERVER" == '127.0.0.1' ] || [ "$SQL_SERVER" == "localhost" ]; then
     export MYSQL_EXTERNAL='NO'
 else
     export MYSQL_EXTERNAL='YES'
@@ -81,6 +81,13 @@ fi
 # All packages.
 . ${FUNCTIONS_DIR}/packages.sh
 
+if [ ${MYSQL_EXTERNAL} == "YES" ]; then
+    echo "Waiting for external MySql response"
+
+    while ! mysqladmin ping -h ${MYSQL_SERVER} -P ${MYSQL_SERVER_PORT} -u ${MYSQL_ROOT_USER} --password=${MYSQL_ROOT_PASSW} --silent; do
+          sleep 1
+    done
+fi
 
 # User/Group: vmail. We will export vmail uid/gid here.
 . ${FUNCTIONS_DIR}/system_accounts.sh
