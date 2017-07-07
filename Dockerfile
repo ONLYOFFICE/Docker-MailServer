@@ -1,5 +1,4 @@
 FROM centos:6.7
-MAINTAINER Ascensio System SIA <support@onlyoffice.com>
 
 ADD iRedMail.repo /etc/yum.repos.d/iRedMail.repo
 ADD iRedMail /usr/src/iRedMail/
@@ -10,8 +9,9 @@ ARG RELEASE_DATE_SIGN=""
 
 LABEL onlyoffice.mailserver.release-date="${RELEASE_DATE}" \
       onlyoffice.mailserver.version="${VERSION}" \
-      onlyoffice.mailserver.release-date.sign="${RELEASE_DATE_SIGN}"
-
+      onlyoffice.mailserver.release-date.sign="${RELEASE_DATE_SIGN}" \
+      maintainer="Ascensio System SIA <support@onlyoffice.com>"
+      
 RUN yum -y update && \
     yum clean metadata && \
     sed -i "s/tsflags=nodocs//g" /etc/yum.conf && \
