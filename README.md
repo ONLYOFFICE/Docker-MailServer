@@ -190,7 +190,7 @@ sudo docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-doc
 	-v /app/onlyoffice/DocumentServer/logs:/var/log/onlyoffice \
 	onlyoffice/documentserver
 ```
-To learn more, refer to the [ONLYOFFICE Document Server documentation](https://github.com/ONLYOFFICE/Docker-MailServer "ONLYOFFICE Mail Server documentation").
+To learn more, refer to the [ONLYOFFICE Document Server documentation](https://github.com/ONLYOFFICE/Docker-DocumentServer "ONLYOFFICE Document Server documentation").
 
 **STEP 4**: Install ONLYOFFICE Mail Server. 
 
