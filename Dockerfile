@@ -1,5 +1,7 @@
 FROM centos:6.7
 
+RUN yum -y install ca-certificates openssl nss
+
 ADD iRedMail.repo /etc/yum.repos.d/iRedMail.repo
 ADD iRedMail /usr/src/iRedMail/
 
@@ -12,8 +14,7 @@ LABEL onlyoffice.mailserver.release-date="${RELEASE_DATE}" \
       onlyoffice.mailserver.release-date.sign="${RELEASE_DATE_SIGN}" \
       maintainer="Ascensio System SIA <support@onlyoffice.com>"
       
-RUN yum -y install ca-certificates openssl nss && \
-    yum -y update && \
+RUN yum -y update && \
     yum clean metadata && \
     sed -i "s/tsflags=nodocs//g" /etc/yum.conf && \
     yum -y --disablerepo=rpmforge,ius,remi install epel-release && \
