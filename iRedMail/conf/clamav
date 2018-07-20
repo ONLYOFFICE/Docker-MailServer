@@ -26,6 +26,7 @@ export CLAMAV_CLAMD_RC_SCRIPT_NAME='clamd'
 export CLAMAV_FRESHCLAMD_RC_SCRIPT_NAME='freshclamd'
 
 export CLAMD_CONF='/etc/clamd.conf'
+export CLAMD_LOGDIR='/var/log/clamav'
 export CLAMD_LOGFILE='/var/log/clamav/clamd.log'
 # CLAMD_BIND_HOST is configured in conf/global
 export CLAMD_LOCAL_SOCKET='/tmp/clamd.socket'

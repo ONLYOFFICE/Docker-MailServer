@@ -73,6 +73,10 @@ clamav_config()
     ECHO_DEBUG "Set permission to 750: ${AMAVISD_TEMPDIR}, ${AMAVISD_QUARANTINEDIR},"
     chmod -R 750 ${AMAVISD_TEMPDIR} ${AMAVISD_QUARANTINEDIR}
 
+    mkdir -p ${CLAMD_LOGDIR} &>/dev/null && \
+    chmod -R 750 ${CLAMD_LOGDIR} &>/dev/null && \
+    chown -R ${CLAMAV_USER}:${CLAMAV_GROUP} ${CLAMD_LOGDIR}
+
     if [ X"${DISTRO_VERSION}" == X'7' ]; then
         # Enable freshclam
         perl -pi -e 's/^(FRESHCLAM_DELAY.*)/#${1}/g' ${ETC_SYSCONFIG_DIR}/freshclam
