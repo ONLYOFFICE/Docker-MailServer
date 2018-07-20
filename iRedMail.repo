@@ -1,5 +1,5 @@
 [iRedMail]
 name=iRedMail
-baseurl=https://iredmail.org/yum/rpms/6/
+baseurl=https://dl.iredmail.org/yum/rpms/6/repodata/repomd.xml
 enabled=1
 gpgcheck=0
