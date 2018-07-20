@@ -1,6 +1,6 @@
 FROM centos:6.7
 
-RUN yum -y install ca-certificates openssl nss
+RUN yum -y update && yum -y install ca-certificates openssl nss
 
 ADD iRedMail.repo /etc/yum.repos.d/iRedMail.repo
 ADD iRedMail /usr/src/iRedMail/
