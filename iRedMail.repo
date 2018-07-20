@@ -1,5 +1,5 @@
 [iRedMail]
 name=iRedMail
-baseurl=http://iredmail.org/yum/rpms/6/
+baseurl=https://iredmail.org/yum/rpms/6/
 enabled=1
 gpgcheck=0
