@@ -15,6 +15,7 @@ LABEL onlyoffice.mailserver.release-date="${RELEASE_DATE}" \
       maintainer="Ascensio System SIA <support@onlyoffice.com>"
       
 RUN yum -y update && \
+    yum -y install yum-plugin-ovl && \
     yum clean metadata && \
     sed -i "s/tsflags=nodocs//g" /etc/yum.conf && \
     yum -y --disablerepo=rpmforge,ius,remi install epel-release && \
