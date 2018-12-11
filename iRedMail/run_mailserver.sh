@@ -80,6 +80,32 @@ service spamassassin start
 service fail2ban start
 service spamtrainer start
 
+# get gateway ip
+gateway_ip=$(/sbin/ip route|awk '/default/ { print $3 }')
+docker_community_domain='onlyoffice-community-server'
+loopback_mask='127.0.0.1/8'
+
+# remove ignoreip rules for dovecot and postfix JAIL (if exists)
+fail2ban-client set dovecot delignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set dovecot delignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set dovecot delignoreip ${docker_community_domain} &>/dev/null
+
+fail2ban-client set postfix delignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set postfix delignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set postfix delignoreip ${docker_community_domain} &>/dev/null
+
+# add ignoreip rules for dovecot and postfix JAIL
+fail2ban-client set dovecot addignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set dovecot addignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set dovecot addignoreip ${docker_community_domain} &>/dev/null
+
+fail2ban-client set postfix addignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set postfix addignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set postfix addignoreip ${docker_community_domain} &>/dev/null
+
+fail2ban-client get dovecot ignoreip
+fail2ban-client get postfix ignoreip
+
 rm -f ${MYSQL_DEFAULTS_FILE_ROOT} &>/dev/null
 rm -f ${TMP_SQL} 2>/dev/null
 unset TMP_SQL
