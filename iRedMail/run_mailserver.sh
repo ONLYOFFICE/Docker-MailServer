@@ -94,6 +94,10 @@ fail2ban-client set postfix delignoreip ${loopback_mask} &>/dev/null
 fail2ban-client set postfix delignoreip ${gateway_ip} &>/dev/null
 fail2ban-client set postfix delignoreip ${docker_community_domain} &>/dev/null
 
+fail2ban-client set postfix-sasl delignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set postfix-sasl delignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set postfix-sasl delignoreip ${docker_community_domain} &>/dev/null
+
 # add ignoreip rules for dovecot and postfix JAIL
 fail2ban-client set dovecot addignoreip ${loopback_mask} &>/dev/null
 fail2ban-client set dovecot addignoreip ${gateway_ip} &>/dev/null
@@ -103,8 +107,17 @@ fail2ban-client set postfix addignoreip ${loopback_mask} &>/dev/null
 fail2ban-client set postfix addignoreip ${gateway_ip} &>/dev/null
 fail2ban-client set postfix addignoreip ${docker_community_domain} &>/dev/null
 
+fail2ban-client set dovecot addignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set dovecot addignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set dovecot addignoreip ${docker_community_domain} &>/dev/null
+
+fail2ban-client set postfix-sasl addignoreip ${loopback_mask} &>/dev/null
+fail2ban-client set postfix-sasl addignoreip ${gateway_ip} &>/dev/null
+fail2ban-client set postfix-sasl addignoreip ${docker_community_domain} &>/dev/null
+
 fail2ban-client get dovecot ignoreip
 fail2ban-client get postfix ignoreip
+fail2ban-client get postfix-sasl ignoreip
 
 rm -f ${MYSQL_DEFAULTS_FILE_ROOT} &>/dev/null
 rm -f ${TMP_SQL} 2>/dev/null
