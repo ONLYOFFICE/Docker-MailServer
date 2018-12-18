@@ -31,6 +31,13 @@ fail2ban_config()
     cp -rf ${FAIL2BAN_SAMPLE_IPTABLE_CF} /etc/fail2ban/action.d/iptables-multiport.conf
     cp ${FAIL2BAN_SAMPLE_LOGROTATE_CF} /etc/logrotate.d/fail2ban    
 
+    # get gateway ip
+    gateway_ip=$(/sbin/ip route|awk '/default/ { print $3 }')
+
+    sed -i 's/ignoreip = 127.0.0.1\/8/ignoreip = 127.0.0.1\/8 onlyoffice-community-server '$gateway_ip'/' /etc/fail2ban/jail.conf
+
+    fail2ban-client reload &>/dev/null
+
     service_control enable 'fail2ban' >> ${INSTALL_LOG} 2>&1
 
     echo 'export status_fail2ban_config="DONE"' >> ${STATUS_FILE}
