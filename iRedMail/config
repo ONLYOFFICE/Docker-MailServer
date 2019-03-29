@@ -3,6 +3,7 @@
 # For installation local MySQL set:
 # MYSQL_SERVER='127.0.0.1'
 # MYSQL_GRANT_HOST='localhost'
+HOSTNAME="$(hostname -f)"
 
 export STORAGE_BASE_DIR=${STORAGE_BASE_DIR:-/var/vmail}
 
@@ -13,7 +14,7 @@ export MYSQL_ROOT_USER=${MYSQL_ROOT_USER:-root}
 export MYSQL_ROOT_PASSWD=${MYSQL_ROOT_PASSWD:-Isadmin123}
 export MYSQL_SERVER_DB_NAME=${MYSQL_SERVER_DB_NAME:-'onlyoffice_mailserver'}
 
-export FIRST_DOMAIN=${FIRST_DOMAIN:-mailserver.onlyoffice.com}
+export FIRST_DOMAIN=${FIRST_DOMAIN:-${HOSTNAME}}
 export DOMAIN_ADMIN_PASSWD=${DOMAIN_ADMIN_PASSWD:-orC61TNQ15}
 
 export CONFIGURATION_ONLY=${CONFIGURATION_ONLY:-'NO'}
