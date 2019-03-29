@@ -83,3 +83,10 @@ service spamtrainer start
 rm -f ${MYSQL_DEFAULTS_FILE_ROOT} &>/dev/null
 rm -f ${TMP_SQL} 2>/dev/null
 unset TMP_SQL
+
+EXTERNAL_SCRIPT="/var/vmail/external.sh"
+
+if [ -f "$EXTERNAL_SCRIPT" ]
+then
+	bash -C '$EXTERNAL_SCRIPT'
+fi
