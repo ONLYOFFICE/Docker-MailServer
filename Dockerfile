@@ -43,7 +43,9 @@ RUN yum -y update && \
     chmod 755 /usr/src/iRedMail/iRedMail.sh && \
     chmod 755 /usr/src/iRedMail/run_mailserver.sh  && \
     bash /usr/src/iRedMail/pkgs_install.sh && \
-    mkdir -p /etc/pki/tls/mailserver /var/vmail
+    mkdir -p /etc/pki/tls/mailserver /var/vmail && \
+    openssl dhparam -out /etc/pki/tls/dhparam.pem 1024 && \
+    chown vmail:vmail /etc/pki/tls/dhparam.pem
 
 VOLUME ["/var/log"]
 VOLUME ["/var/lib/mysql"]
