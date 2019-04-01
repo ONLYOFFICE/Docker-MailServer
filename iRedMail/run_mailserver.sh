@@ -20,8 +20,8 @@ cd ${ROOTDIR}
 . ${ROOTDIR}/functions/postfix.sh
 . ${ROOTDIR}/functions/mysql.sh
 
-if [ ! -f ${HTTPD_LOG_DIR} ]; then
-    mkdir ${HTTPD_LOG_DIR}
+if [ ! -d ${HTTPD_LOG_DIR} ]; then
+    mkdir -p ${HTTPD_LOG_DIR}
 fi
 
 rm -f /var/run/syslogd.pid
