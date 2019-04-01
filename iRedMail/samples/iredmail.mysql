@@ -129,17 +129,17 @@ CREATE TABLE IF NOT EXISTS domain_admins (
 --
 CREATE TABLE IF NOT EXISTS mailbox (
     username VARCHAR(255) NOT NULL DEFAULT '',
-    password VARCHAR(255) NOT NULL DEFAULT '',
+    `password` VARCHAR(255) NOT NULL DEFAULT '',
     name VARCHAR(255) NOT NULL DEFAULT '',
-    language VARCHAR(5) NOT NULL DEFAULT '',
+    `language` VARCHAR(5) NOT NULL DEFAULT '',
     storagebasedirectory VARCHAR(255) NOT NULL DEFAULT '',
     storagenode VARCHAR(255) NOT NULL DEFAULT '',
     maildir VARCHAR(255) NOT NULL DEFAULT '',
     quota BIGINT(20) NOT NULL DEFAULT 0, -- Total mail quota size
-    domain VARCHAR(255) NOT NULL DEFAULT '',
+    `domain` VARCHAR(255) NOT NULL DEFAULT '',
     transport VARCHAR(255) NOT NULL DEFAULT '',
     department VARCHAR(255) NOT NULL DEFAULT '',
-    rank VARCHAR(255) NOT NULL DEFAULT 'normal',
+    `rank` VARCHAR(255) NOT NULL DEFAULT 'normal',
     employeeid VARCHAR(255) DEFAULT '',
     isadmin TINYINT(1) NOT NULL DEFAULT 0,
     isglobaladmin TINYINT(1) NOT NULL DEFAULT 0,
@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS mailbox (
     -- Required by PostfixAdmin
     local_part VARCHAR(255) NOT NULL DEFAULT '',
     PRIMARY KEY (username),
-    INDEX (domain),
+    INDEX (`domain`),
     INDEX (department),
     INDEX (employeeid),
     INDEX (isadmin),
