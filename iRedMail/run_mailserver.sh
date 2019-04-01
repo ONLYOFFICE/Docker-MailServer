@@ -15,8 +15,12 @@ fi
 
 cd ${ROOTDIR}
 
+export CONF_DIR="${ROOTDIR}/conf"
+
 . ${ROOTDIR}/config
-. ${ROOTDIR}/conf/mysql
+. ${CONF_DIR}/global
+. ${CONF_DIR}/core
+. ${CONF_DIR}/mysql
 . ${ROOTDIR}/functions/postfix.sh
 . ${ROOTDIR}/functions/mysql.sh
 
