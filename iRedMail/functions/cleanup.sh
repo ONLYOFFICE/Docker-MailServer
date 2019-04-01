@@ -92,7 +92,7 @@ cleanup_remove_mod_python()
 cleanup_replace_firewall_rules()
 {
     # Get SSH listen port, replace default port number in iptable rule file.
-    export sshd_port="$(grep '^Port' ${SSHD_CONFIG} | awk '{print $2}' )"
+    export sshd_port="$(grep -s '^Port' ${SSHD_CONFIG} | awk '{print $2}' )"
     if [ X"${sshd_port}" == X"" -o X"${sshd_port}" == X"22" ]; then
         # No port number defined, use default (22).
         export sshd_port='22'
