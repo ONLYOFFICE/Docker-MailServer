@@ -88,5 +88,5 @@ EXTERNAL_SCRIPT="/var/vmail/external.sh"
 
 if [ -f "$EXTERNAL_SCRIPT" ]
 then
-	bash -C '${EXTERNAL_SCRIPT}'
+	bash -C ${EXTERNAL_SCRIPT}
 fi
