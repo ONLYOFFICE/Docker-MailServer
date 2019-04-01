@@ -24,9 +24,9 @@ if [ ! -f ${HTTPD_LOG_DIR} ]; then
     mkdir ${HTTPD_LOG_DIR}
 fi
 
-rm /var/run/syslogd.pid
-rm /var/run/cbpolicyd.pid
-rm /var/run/opendkim/opendkim.pid
+rm -f /var/run/syslogd.pid
+rm -f /var/run/cbpolicyd.pid
+rm -f /var/run/opendkim/opendkim.pid
 
 if [ ${MYSQL_SERVER} != "127.0.0.1" ] || [ ${MYSQL_SERVER} != "localhost" ]; then
     echo "Waiting for external MySql response"
