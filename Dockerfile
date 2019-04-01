@@ -5,8 +5,8 @@ RUN yum -y update && yum -y install ca-certificates openssl nss
 ADD iRedMail.repo /etc/yum.repos.d/iRedMail.repo
 ADD iRedMail /usr/src/iRedMail/
 
-ARG VERSION="1.6.42"
-ARG RELEASE_DATE="2019-03-29"
+ARG VERSION="1.6.43"
+ARG RELEASE_DATE="2019-04-01"
 ARG RELEASE_DATE_SIGN=""
 
 LABEL onlyoffice.mailserver.release-date="${RELEASE_DATE}" \
