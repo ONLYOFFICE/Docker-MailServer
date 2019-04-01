@@ -25,7 +25,7 @@ spam_trainer_config()
     ECHO_INFO "Configure SpamTrainer."
 
     # Create directories
-    mkdir /var/log/spamtrainer
+    mkdir -p /var/log/spamtrainer
     mkdir /var/run/spamtrainer
     mkdir /usr/share/spamtrainer
     mkdir /usr/share/spamtrainer/spam
