@@ -267,22 +267,10 @@ EOF
     fi
 
     cat <<EOF
+
+    cat <<EOF
 ********************************************************************
-* URLs of installed web applications:
-*
-* - Webmail:
-EOF
-
-    cat <<EOF
-*   + Username: ${SITE_ADMIN_NAME}, Password: ${SITE_ADMIN_PASSWD}
-*
-EOF
-
-    cat <<EOF
-*
-* - Web admin panel (iRedAdmin): httpS://${HOSTNAME}/iredadmin/
-*
-* You can login to above links with same credential:
+* First mail account credential:
 *
 *   o Username: ${SITE_ADMIN_NAME}
 *   o Password: ${SITE_ADMIN_PASSWD}
@@ -297,10 +285,6 @@ EOF
 * And it's sent to your mail account ${tip_recipient}.
 *
 ********************* WARNING **************************************
-*
-* Rebooting your system is required to enable mail services.
-*
-********************************************************************
 EOF
 
     echo 'export status_cleanup="DONE"' >> ${STATUS_FILE}
