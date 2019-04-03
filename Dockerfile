@@ -20,8 +20,8 @@ RUN yum -y update && \
     sed -i "s/tsflags=nodocs//g" /etc/yum.conf && \
     yum -y --disablerepo=rpmforge,ius,remi install epel-release && \
 	yum -y install tar wget curl htop nano gcc make perl && \
-	wget https://www.openssl.org/source/openssl-1.0.2-latest.tar.gz && \
-	tar -zxf openssl-1.0.2-latest.tar.gz && \
+	wget https://www.openssl.org/source/openssl-1.0.2l.tar.gz && \
+	tar -zxf openssl-1.0.2l.tar.gz && \
 	cd openssl-1.0.2*/ && \
 	./config && \
 	make && \
