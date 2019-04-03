@@ -1,11 +1,11 @@
 FROM centos:6.7
 
-RUN yum -y update && yum -y install ca-certificates openssl nss
+RUN yum -y update && yum -y install ca-certificates nss
 
 ADD iRedMail.repo /etc/yum.repos.d/iRedMail.repo
 ADD iRedMail /usr/src/iRedMail/
 
-ARG VERSION="1.6.52"
+ARG VERSION="1.6.51"
 ARG RELEASE_DATE="2019-04-03"
 ARG RELEASE_DATE_SIGN=""
 
@@ -20,6 +20,18 @@ RUN yum -y update && \
     sed -i "s/tsflags=nodocs//g" /etc/yum.conf && \
     yum -y --disablerepo=rpmforge,ius,remi install epel-release && \
     yum -y install tar wget curl htop nano gcc make perl && \
+    wget https://www.openssl.org/source/openssl-1.1.0f.tar.gz && \
+    tar -zxf openssl-1.1.0f.tar.gz && \
+    cd openssl-1.1.0f/ && \
+    ./config && \
+    make && \
+    make install && \
+    cd .. && \
+    rm -f openssl-1.1.0f.tar.gz && \
+    mv /usr/bin/openssl /root/ && \
+    ln -s /usr/local/ssl/bin/openssl /usr/bin/openssl && \
+    echo '/usr/local/lib64' >> /etc/ld.so.conf && \
+    ldconfig && \
     yum -y install postfix mysql-server mysql perl-DBD-MySQL mod_auth_mysql && \
     yum -y install php php-common php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt && \
     yum -y install httpd mod_ssl cluebringer dovecot dovecot-pigeonhole dovecot-managesieve && \
