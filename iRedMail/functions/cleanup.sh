@@ -267,8 +267,6 @@ EOF
     fi
 
     cat <<EOF
-
-    cat <<EOF
 ********************************************************************
 * First mail account credential:
 *
