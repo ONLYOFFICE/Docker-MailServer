@@ -45,7 +45,7 @@ sa_import_sql()
     
     ${MYSQL_CLIENT_ROOT} <<EOF
     -- Create database
-    CREATE DATABASE IF NOT EXISTS ${SPAMASSASSIN_DB_NAME};
+    CREATE DATABASE IF NOT EXISTS \`${SPAMASSASSIN_DB_NAME}\`;
 EOF
 
     if [ X"${MYSQL_EXTERNAL}" == X'NO' ]; then
