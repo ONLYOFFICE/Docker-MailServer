@@ -161,7 +161,7 @@ mysql_import_vmail_users()
     # Mailbox format is 'Maildir/' by default.
     cat >> ${MYSQL_VMAIL_SQL} <<EOF
 /* Create database for virtual hosts. */
-CREATE DATABASE IF NOT EXISTS ${VMAIL_DB} CHARACTER SET utf8;
+CREATE DATABASE IF NOT EXISTS \`${VMAIL_DB}\` CHARACTER SET utf8;
 EOF
     if [ X"${MYSQL_EXTERNAL}" == X'NO' ]; then
         cat >> ${MYSQL_VMAIL_SQL} <<EOF

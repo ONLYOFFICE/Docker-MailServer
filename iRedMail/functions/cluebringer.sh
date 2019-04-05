@@ -102,7 +102,7 @@ cluebringer_config()
     perl -pi -e 's#(.*Track.*NOT.*NULL)(.*)#${1} DEFAULT ""${2}#g' ${DB_SAMPLE_FILE}
 
     cat >> ${tmp_sql} <<EOF
-CREATE DATABASE IF NOT EXISTS ${CLUEBRINGER_DB_NAME};
+CREATE DATABASE IF NOT EXISTS \`${CLUEBRINGER_DB_NAME}\`;
 USE ${CLUEBRINGER_DB_NAME};
 SOURCE ${DB_SAMPLE_FILE};
 EOF

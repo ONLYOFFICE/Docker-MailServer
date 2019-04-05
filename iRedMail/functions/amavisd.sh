@@ -511,7 +511,7 @@ amavisd_import_sql()
     
     ${MYSQL_CLIENT_ROOT} <<EOF
 	-- Create database
-	CREATE DATABASE IF NOT EXISTS ${AMAVISD_DB_NAME} DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+	CREATE DATABASE IF NOT EXISTS \`${AMAVISD_DB_NAME}\` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 EOF
 
 	if [ X"${MYSQL_EXTERNAL}" == X'NO' ]; then
