@@ -36,7 +36,7 @@ RUN yum -y update && \
     yum -y install php php-common php-gd php-xml php-mysql php-ldap php-pgsql php-imap php-mbstring php-pecl-apc php-intl php-mcrypt && \
     yum -y install httpd mod_ssl cluebringer dovecot dovecot-pigeonhole dovecot-managesieve && \
     yum -y install amavisd-new clamd clamav-db spamassassin altermime perl-LDAP perl-Mail-SPF unrar && \
-    yum -y install python-sqlalchemy python-setuptools MySQL-python  awstats && \
+    yum -y install python-sqlalchemy python-setuptools MySQL-python python-pip awstats && \
     yum -y install libopendkim libopendkim-devel mysql-devel readline-devel gcc-c++ sendmail-milter sendmail-devel libbsd-devel && \
     yum -y install readline libyaml-devel libffi-devel openssl-devel bison && \
     yum -y install curl-devel httpd-devel sqlite-devel which libtool unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch crond imapsync opendbx-mysql && \
@@ -46,6 +46,7 @@ RUN yum -y update && \
     chmod 755 /usr/src/iRedMail/run_mailserver.sh  && \
     bash /usr/src/iRedMail/pkgs_install.sh && \
     mkdir -p /etc/pki/tls/mailserver /var/vmail && \
+    pip install -r /usr/src/iRedMail/tools/scripts/requirements.txt && \
     openssl dhparam -out /etc/pki/tls/dhparams.pem 1024
 
 VOLUME ["/var/log"]
