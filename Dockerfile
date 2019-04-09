@@ -39,7 +39,7 @@ RUN yum -y update && \
     yum -y install python-sqlalchemy python-setuptools MySQL-python  awstats && \
     yum -y install libopendkim libopendkim-devel mysql-devel readline-devel gcc-c++ sendmail-milter sendmail-devel libbsd-devel && \
     yum -y install readline libyaml-devel libffi-devel openssl-devel bison && \
-    yum -y install curl-devel httpd-devel sqlite-devel which libtool unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch crond imapsync && \
+    yum -y install curl-devel httpd-devel sqlite-devel which libtool unzip bzip2 acl patch tmpwatch crontabs dos2unix logwatch crond imapsync opendbx-mysql && \
     find /usr/src/iRedMail -type d -name pkgs -prune -o -type f -exec dos2unix {} \; && \
     chmod 755 /usr/src/iRedMail/pkgs_install.sh && \
     chmod 755 /usr/src/iRedMail/iRedMail.sh && \
