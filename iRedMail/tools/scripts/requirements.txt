@@ -6,4 +6,5 @@
 ###### Requirements without Version Specifiers ######
 ArgumentParser
 mysql-connector
+argparse
 #
