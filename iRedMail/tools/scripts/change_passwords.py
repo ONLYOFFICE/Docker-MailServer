@@ -109,7 +109,7 @@ def main():
             update_mailbox = ("UPDATE `mailbox` SET `password` = %s WHERE `username` = %s")
             encrypted_password = crypt.crypt(password, crypt.mksalt(crypt.METHOD_SHA512))
 
-            date_mailbox = (email, encrypted_password)
+            date_mailbox = (encrypted_password, email)
 
             try:
                 # Update mailbox
