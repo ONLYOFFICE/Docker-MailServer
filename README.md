@@ -266,11 +266,11 @@ docker-compose up -d
 
 ## Project Information
 
-Official website: [http://www.onlyoffice.org](http://onlyoffice.org "http://www.onlyoffice.org")
+Official website: [https://www.onlyoffice.com/](https://www.onlyoffice.com/?utm_source=github&utm_medium=cpc&utm_campaign=GitHubDockerMail)
 
 License: [View](https://raw.githubusercontent.com/ONLYOFFICE/Docker-MailServer/master/LICENSE.txt "View")
 
-SaaS version: [http://www.onlyoffice.com](http://www.onlyoffice.com "http://www.onlyoffice.com")
+SaaS version: [https://www.onlyoffice.com/cloud-office.aspx](https://www.onlyoffice.com/cloud-office.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubDockerMail)
 
 
 ## User Feedback and Support
