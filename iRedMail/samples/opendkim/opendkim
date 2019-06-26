@@ -44,9 +44,9 @@ DAEMON=${exec_prefix}/sbin/$prog
 CONF_FILE=/etc/$prog.conf
 PID_FILE=/var/run/$prog/$prog.pid
 KEYGEN=${prefix}/sbin/opendkim-genkey
-DKIM_KEYDIR=${prefix}/etc/$prog/keys
+DKIM_KEYDIR=/etc/$prog/keys
 DKIM_SELECTOR=default
-AUTOCREATE_DKIM_KEYS=yes
+AUTOCREATE_DKIM_KEYS=NO
 
 if [ -f /etc/sysconfig/opendkim ]; then
 	. /etc/sysconfig/opendkim
@@ -63,7 +63,7 @@ do_dkim_keygen() {
 			mkdir -p $DKIM_KEYDIR
 			$KEYGEN -D $DKIM_KEYDIR -s $DKIM_SELECTOR -d `hostname --domain`
 			chown root:$prog $DKIM_KEYDIR
-			chown $prog:$prog $DKIM_KEYDIR/$DKIM_SELECTOR.{private,txt}
+			chown -R $prog:$prog $DKIM_KEYDIR
 			chmod 600 $DKIM_KEYDIR/$DKIM_SELECTOR.private
 			chmod 644 $DKIM_KEYDIR/$DKIM_SELECTOR.txt
 			echo_success
