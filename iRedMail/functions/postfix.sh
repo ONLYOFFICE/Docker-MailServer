@@ -304,6 +304,10 @@ postfix_config_tls()
 {
     ECHO_DEBUG "Enable TLS/SSL support in Postfix."
 
+    postconf -e smtp_use_tls='yes'
+    postconf -e smtpd_use_tls='yes'
+    postconf -e smtpd_tls_received_header='yes'
+    
     postconf -e smtpd_tls_security_level='may'
     postconf -e smtpd_tls_loglevel='0'
     postconf -e smtpd_tls_key_file="${SSL_KEY_FILE}"
@@ -312,6 +316,11 @@ postfix_config_tls()
     postconf -e tls_random_source='dev:/dev/urandom'
 
     cat >> ${POSTFIX_FILE_MASTER_CF} <<EOF
+smtps     inet  n       -       n       -       -       smtpd
+  -o syslog_name=postfix/smtps
+  -o smtpd_tls_wrappermode=yes
+  -o smtpd_sasl_auth_enable=yes
+
 submission inet n       -       n       -       -       smtpd
   -o smtpd_tls_security_level=encrypt
   -o smtpd_sasl_auth_enable=yes
