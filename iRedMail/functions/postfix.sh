@@ -289,11 +289,11 @@ postfix_config_sasl()
     if [ X"${USE_CLUEBRINGER}" == X"YES" ]; then
         POSTCONF_CLUEBRINGER="check_policy_service inet:${CLUEBRINGER_BIND_HOST}:${CLUEBRINGER_BIND_PORT},"
 
-        postconf -e smtpd_recipient_restrictions="reject_unknown_sender_domain, reject_unknown_recipient_domain, reject_non_fqdn_sender, reject_non_fqdn_recipient, reject_unlisted_recipient, ${POSTCONF_IREDAPD} ${POSTCONF_CLUEBRINGER} permit_mynetworks, permit_sasl_authenticated, reject_invalid_hostname, reject_unauth_destination, reject_unverified_sender, reject_unauth_pipelining, reject_rbl_client b.barracudacentral.org, permit"
+        postconf -e smtpd_recipient_restrictions="reject_unknown_sender_domain, reject_unknown_recipient_domain, reject_non_fqdn_sender, reject_non_fqdn_recipient, reject_unlisted_recipient, ${POSTCONF_IREDAPD} ${POSTCONF_CLUEBRINGER} permit_mynetworks, permit_sasl_authenticated, reject_invalid_hostname, reject_unauth_destination, reject_unauth_pipelining, reject_rbl_client b.barracudacentral.org, permit"
         postconf -e smtpd_end_of_data_restrictions="${POSTCONF_IREDAPD} ${POSTCONF_CLUEBRINGER}"
 
     else
-        postconf -e smtpd_recipient_restrictions="reject_unknown_sender_domain, reject_unknown_recipient_domain, reject_non_fqdn_sender, reject_non_fqdn_recipient, reject_unlisted_recipient, ${POSTCONF_IREDAPD} permit_mynetworks, permit_sasl_authenticated, reject_invalid_hostname, reject_unauth_destination, reject_unverified_sender, reject_unauth_pipelining, reject_rbl_client b.barracudacentral.org, permit"
+        postconf -e smtpd_recipient_restrictions="reject_unknown_sender_domain, reject_unknown_recipient_domain, reject_non_fqdn_sender, reject_non_fqdn_recipient, reject_unlisted_recipient, ${POSTCONF_IREDAPD} permit_mynetworks, permit_sasl_authenticated, reject_invalid_hostname, reject_unauth_destination, reject_unauth_pipelining, reject_rbl_client b.barracudacentral.org, permit"
 
     fi
 
