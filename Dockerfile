@@ -5,7 +5,7 @@ RUN yum -y update && yum -y install ca-certificates nss
 ADD iRedMail.repo /etc/yum.repos.d/iRedMail.repo
 ADD iRedMail /usr/src/iRedMail/
 
-ARG VERSION="1.6.70"
+ARG VERSION="1.6.71"
 ARG RELEASE_DATE="2019-06-26"
 ARG RELEASE_DATE_SIGN=""
 
