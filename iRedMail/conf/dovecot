@@ -84,5 +84,5 @@ export DOVECOT_SHARE_FOLDER_ANYONE_DB_TABLE='anyone_shares'
 export DOVECOT_SHARE_FOLDER_SQLTYPE='mysql'
 export DOVECOT_REALTIME_QUOTA_SQLTYPE='mysql'
 
-export DOVECOT_PROTOCOLS="pop3 imap sieve lmtp pop3s imaps"
+export DOVECOT_PROTOCOLS="pop3 imap sieve lmtp"
 export DOVECOT_AUTH_MECHS='PLAIN LOGIN'
