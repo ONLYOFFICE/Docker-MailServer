@@ -17,15 +17,11 @@
 #---------------------------------------------------------------------
 
 #
-# Sample Postfix check_helo_access rule. It should be localted at:
+# Sample Postfix check_helo_access rule. It should be located at:
 #   /etc/postfix/check_helo_access.pcre
 #
 # Shipped within iRedMail project:
 #   * http://www.iredmail.org/
-#
-# Thanks all contributer(s):
-#   * muniao <at> gamil.
-#
 
 # Prepend HELO hostname of sender server
 #/(.*)/ PREPEND X-Original-Helo: $1 (iRedMail: http://www.iredmail.org/)
@@ -99,7 +95,17 @@
 #
 # Reject adsl spammers.
 #
-/(adsl)/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server appears to be on a dynamic IP address that should not be doing direct mail delivery (${1})
+# match word `adsl` with word boundary `\b`.
+/(\badsl\b)/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server appears to be on a dynamic IP address that should not be doing direct mail delivery (${1})
+
+# bypass "[IP_ADDRESS]"
+/^\[(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\]$/ DUNNO
+
+# bypass some HELOs which contains IP address
+/^o\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}\.outbound-mail\.sendgrid\.net$/ DUNNO
+/^\d{1,3}-\d{1,3}-\d{1,3}-\d{1,3}\.mail-mail\.facebook\.com$/ DUNNO
+
+# reject HELO which contains IP address
 /(\d{1,3}[\.-]\d{1,3}[\.-]\d{1,3}[\.-]\d{1,3})/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server appears to be on a dynamic IP address that should not be doing direct mail delivery (${1})
 /(\d{1,3}\.ip\.-\d{1,3}-\d{1,3}-\d{1,3}\.eu)/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server appears to be on a dynamic IP address that should not be doing direct mail delivery (${1})
 /(pppoe)/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server appears to be on a dynamic IP address that should not be doing direct mail delivery (${1})
@@ -118,7 +124,6 @@
 /(advance\.com\.ar)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(airtelbroadband\.in)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(bb\.netvision\.net\.il)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
-/(bezeqint\.net)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(broadband3\.iol\.cz)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(cable\.net\.co)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(catv\.broadband\.hu)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
@@ -134,8 +139,6 @@
 /(embarqhsd\.net)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(emcali\.net\.co)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(epm\.net\.co)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
-/(eutelia\.it)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
-/(fastwebnet\.it)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(fibertel\.com\.ar)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(freedom2surf\.net)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(hgcbroadband\.com)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
@@ -168,3 +171,11 @@
 /(marunouchi\.tokyo\.ocn\.ne\.jp)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(amedex\.com)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
 /(aageneva\.com)$/ REJECT ACCESS DENIED. Your email was rejected because the sending mail server does not identify itself correctly (${1})
+/^ylmf-pc/ REJECT ACCESS DENIED
+
+/(\.*wideragents\.com)$/ REJECT ACCESS DENIED (${1})
+/(\.*resumekeep\.net)$/ REJECT ACCESS DENIED (${1})
+/(\.*terracedrink\.com)$/ REJECT ACCESS DENIED (${1})
+/(\.*sincemessage\.com)$/ REJECT ACCESS DENIED (${1})
+/(\.*ordertranquility\.com)$/ REJECT ACCESS DENIED (${1})
+/(\.*terracedrink\.com)$/ REJECT ACCESS DENIED (${1})
