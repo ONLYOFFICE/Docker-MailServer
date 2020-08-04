@@ -44,6 +44,7 @@ RUN yum -y update && \
     chmod 755 /usr/src/iRedMail/pkgs_install.sh && \
     chmod 755 /usr/src/iRedMail/iRedMail.sh && \
     chmod 755 /usr/src/iRedMail/run_mailserver.sh  && \
+    chmod 755 /usr/src/iRedMail/install_mail.sh  && \
     bash /usr/src/iRedMail/pkgs_install.sh && \
     mkdir -p /etc/pki/tls/mailserver /var/vmail && \
     pip install -r /usr/src/iRedMail/tools/scripts/requirements.txt && \
@@ -66,5 +67,4 @@ EXPOSE 4190
 
 CMD export CONFIGURATION_ONLY='YES' && \
     export USE_DOCKER='YES' && \
-    bash -C '/usr/src/iRedMail/iRedMail.sh' && \
-    bash -C '/usr/src/iRedMail/run_mailserver.sh';'bash'
+    bash -C '/usr/src/iRedMail/install_mail.sh';
