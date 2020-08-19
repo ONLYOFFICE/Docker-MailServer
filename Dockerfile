@@ -12,6 +12,7 @@ ARG RELEASE_DATE_SIGN=""
 LABEL onlyoffice.mailserver.release-date="${RELEASE_DATE}" \
       onlyoffice.mailserver.version="${VERSION}" \
       onlyoffice.mailserver.release-date.sign="${RELEASE_DATE_SIGN}" \
+      description="Mail Server is an open-source mail server solution that allows connecting your own domain name to ONLYOFFICE collaboration platform,as well as creating and managing corporate mailboxes."
       maintainer="Ascensio System SIA <support@onlyoffice.com>"
       
 RUN yum -y update && \
