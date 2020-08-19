@@ -13,8 +13,9 @@ LABEL onlyoffice.mailserver.release-date="${RELEASE_DATE}" \
       onlyoffice.mailserver.version="${VERSION}" \
       onlyoffice.mailserver.release-date.sign="${RELEASE_DATE_SIGN}" \
       description="Mail Server is an open-source mail server solution that allows connecting your own domain name to ONLYOFFICE collaboration platform,as well as creating and managing corporate mailboxes."
-      maintainer="Ascensio System SIA <support@onlyoffice.com>"
-      
+      maintainer="Ascensio System SIA <support@onlyoffice.com>" \
+      securitytxt="https://www.onlyoffice.com/.well-known/security.txt"
+
 RUN yum -y update && \
     yum -y install yum-plugin-ovl && \
     yum clean metadata && \
