@@ -18,14 +18,14 @@ ONLYOFFICE Mail Server is a full-featured mail server solution developed on the 
 
 ## Functionality
 
-Integrated with ONLYOFFICE Community Server, Mail Server allows to:
+Integrated with ONLYOFFICE Workspace, Mail Server allows to:
 
 * connect your own domain name;
 * create mailboxes;
 * add aliases for each mailbox;
 * create mailbox groups.
 
-ONLYOFFICE Mail Server is a part of **ONLYOFFICE Workspace** that also includes [Document Server (distributed as ONLYOFFICE Docs)](https://github.com/ONLYOFFICE/DocumentServer), [Community Server (distributed as ONLYOFFICE Groups](https://github.com/ONLYOFFICE/Docker-CommunityServer), [Talk (instant messaging app)](https://github.com/ONLYOFFICE/XMPPServer). 
+ONLYOFFICE Mail Server is a part of **ONLYOFFICE Workspace** that also includes [Document Server (distributed as ONLYOFFICE Docs)](https://github.com/ONLYOFFICE/DocumentServer), [Community Server (distributed as ONLYOFFICE Groups)](https://github.com/ONLYOFFICE/Docker-CommunityServer), [Talk (instant messaging app)](https://github.com/ONLYOFFICE/XMPPServer). 
 
 ## Recommended System Requirements
 
