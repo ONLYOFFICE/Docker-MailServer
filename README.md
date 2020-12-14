@@ -18,12 +18,14 @@ ONLYOFFICE Mail Server is a full-featured mail server solution developed on the 
 
 ## Functionality
 
-Integrated with ONLYOFFICE Community Server, Mail Server allows to:
+Integrated with ONLYOFFICE Workspace, Mail Server allows to:
 
 * connect your own domain name;
 * create mailboxes;
 * add aliases for each mailbox;
 * create mailbox groups.
+
+ONLYOFFICE Mail Server is a part of **ONLYOFFICE Workspace** that also includes [Document Server (distributed as ONLYOFFICE Docs)](https://github.com/ONLYOFFICE/DocumentServer), [Community Server (distributed as ONLYOFFICE Groups)](https://github.com/ONLYOFFICE/Docker-CommunityServer), [Talk (instant messaging app)](https://github.com/ONLYOFFICE/XMPPServer). 
 
 ## Recommended System Requirements
 
@@ -49,14 +51,19 @@ sudo mkdir -p "/app/onlyoffice/mysql/initdb";
 ```
 sudo mkdir -p "/app/onlyoffice/CommunityServer/data";
 sudo mkdir -p "/app/onlyoffice/CommunityServer/logs";
+sudo mkdir -p "/app/onlyoffice/CommunityServer/letsencrypt";
 ```
 
-3. And for **Mail Server** data and logs
+3. For **Mail Server** data and logs
 ```
 sudo mkdir -p "/app/onlyoffice/MailServer/data/certs";
 sudo mkdir -p "/app/onlyoffice/MailServer/logs";
 ```
-
+4. For **Control Panel**
+```
+sudo mkdir -p "/app/onlyoffice/ControlPanel/data";
+sudo mkdir -p "/app/onlyoffice/ControlPanel/logs";
+```
 Then create the `onlyoffice` network:
 ```
 sudo docker network create --driver bridge onlyoffice
@@ -167,9 +174,9 @@ To get access to your data from outside the container, you need to mount the vol
 
 Storing the data on the host machine allows you to easily update ONLYOFFICE once the new version is released without losing your data.
 
-## Installing ONLYOFFICE Mail Server integrated with Document and Community Servers
+## Installing ONLYOFFICE Workspace
 
-ONLYOFFICE Mail Server is a part of ONLYOFFICE Community Edition that comprises also Document Server and Community Server. To install them, follow these easy steps:
+ONLYOFFICE Mail Server is a part of ONLYOFFICE Workspace that comprises also Document Server and Community Server. To install them, follow these easy steps:
 
 **STEP 1**: Create the `onlyoffice` network.
 
@@ -214,27 +221,38 @@ sudo docker run --init --net onlyoffice --privileged -i -t -d --restart=always -
 
 The additional parameters for mail server are available [here](https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/master/docker-compose.yml#L75).
 
-**STEP 5**: Install ONLYOFFICE Community Server
+**Step5**: Install Control Panel
 
-```bash
-sudo docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-community-server -p 80:80 -p 443:443 -p 5222:5222 \
+```
+docker run --net onlyoffice -i -t -d --restart=always --name onlyoffice-control-panel \
+-v /var/run/docker.sock:/var/run/docker.sock \
+-v /app/onlyoffice/CommunityServer/data:/app/onlyoffice/CommunityServer/data \
+-v /app/onlyoffice/ControlPanel/data:/var/www/onlyoffice/Data \
+-v /app/onlyoffice/ControlPanel/logs:/var/log/onlyoffice onlyoffice/controlpanel
+```
+
+**STEP 6**: Install ONLYOFFICE Community Server
+
+```
+sudo docker run --net onlyoffice -i -t -d --privileged --restart=always --name onlyoffice-community-server -p 80:80 -p 443:443 -p 5222:5222 \
  -e MYSQL_SERVER_ROOT_PASSWORD=my-secret-pw \
  -e MYSQL_SERVER_DB_NAME=onlyoffice \
  -e MYSQL_SERVER_HOST=onlyoffice-mysql-server \
  -e MYSQL_SERVER_USER=onlyoffice_user \
- -e MYSQL_SERVER_PASS=onlyoffice_pass \
- 
- -e DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server \
- 
+ -e MYSQL_SERVER_PASS=onlyoffice_pass \ 
+ -e DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server \ 
  -e MAIL_SERVER_API_HOST=${MAIL_SERVER_IP} \
  -e MAIL_SERVER_DB_HOST=onlyoffice-mysql-server \
  -e MAIL_SERVER_DB_NAME=onlyoffice_mailserver \
  -e MAIL_SERVER_DB_PORT=3306 \
  -e MAIL_SERVER_DB_USER=root \
- -e MAIL_SERVER_DB_PASS=my-secret-pw \
- 
+ -e MAIL_SERVER_DB_PASS=my-secret-pw \ 
+ -e CONTROL_PANEL_PORT_80_TCP=80 \
+ -e CONTROL_PANEL_PORT_80_TCP_ADDR=onlyoffice-control-panel \
  -v /app/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data \
  -v /app/onlyoffice/CommunityServer/logs:/var/log/onlyoffice \
+ -v /app/onlyoffice/CommunityServer/letsencrypt:/etc/letsencrypt \
+ -v /sys/fs/cgroup:/sys/fs/cgroup:ro \
  onlyoffice/communityserver
 ```
 
@@ -243,24 +261,42 @@ Where `${MAIL_SERVER_IP}` is the IP address for **ONLYOFFICE Mail Server**. You 
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' onlyoffice-mail-server
 ```
 
-Alternatively, you can use an automatic installation script to install the whole ONLYOFFICE Community Edition at once. For the mail server correct work you need to specify its hostname 'yourdomain.com'.
+Alternatively, you can use an automatic installation script to install the whole ONLYOFFICE Workspace at once. For the mail server correct work you need to specify its hostname 'yourdomain.com'.
 
-**STEP 1**: Download the Community Edition Docker script file
+**STEP 1**: Download the ONLYOFFICE Workspace Docker script file
 
 ```bash
-wget http://download.onlyoffice.com/install/opensource-install.sh
+wget https://download.onlyoffice.com/install/workspace-install.sh
 ```
 
-**STEP 2**: Install ONLYOFFICE Community Edition executing the following command:
+**STEP 2**: Install ONLYOFFICE Workspace executing the following command:
 
 ```bash
-bash opensource-install.sh -md yourdomain.com
+workspace-install.sh -md yourdomain.com
 ```
 
-Or, use [docker-compose](https://docs.docker.com/compose/install "docker-compose"). For the mail server correct work you need to specify its hostname 'yourdomain.com'. Assuming you have docker-compose installed, execute the following command:
+Or, use [docker-compose](https://docs.docker.com/compose/install "docker-compose"). First you need to clone this [GitHub repository](https://github.com/ONLYOFFICE/Docker-CommunityServer/):
 
 ```bash
-wget https://raw.githubusercontent.com/ONLYOFFICE/Docker-CommunityServer/master/docker-compose.yml
+git clone https://github.com/ONLYOFFICE/Docker-CommunityServer
+```
+
+After that switch to the repository folder:
+
+```bash
+cd Docker-CommunityServer
+```
+
+For the mail server correct work, open one of the files depending on the product you use:
+
+* [docker-compose.yml](https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/master/docker-compose.groups.yml) for Community Server (distributed as ONLYOFFICE Groups)
+* [docker-compose.yml](https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/master/docker-compose.workspace.yml) for ONLYOFFICE Workspace Community Edition 
+* [docker-compose.yml](https://github.com/ONLYOFFICE/Docker-CommunityServer/blob/master/docker-compose.workspace_enterprise.yml) for ONLYOFFICE Workspace Enterprise Edition
+
+Then replace the `${MAIL_SERVER_HOSTNAME}` variable with your own hostname for the **Mail Server**. After that, assuming you have docker-compose installed, execute the following command:
+
+```bash
+cd link-to-your-modified-docker-compose
 docker-compose up -d
 ```
 
@@ -270,13 +306,11 @@ Official website: [https://www.onlyoffice.com/](https://www.onlyoffice.com/?utm_
 
 License: [View](https://raw.githubusercontent.com/ONLYOFFICE/Docker-MailServer/master/LICENSE.txt "View")
 
-SaaS version: [https://www.onlyoffice.com/cloud-office.aspx](https://www.onlyoffice.com/cloud-office.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubDockerMail)
+ONLYOFFICE Workspace: [https://www.onlyoffice.com/workspace.aspx](https://www.onlyoffice.com/workspace.aspx?utm_source=github&utm_medium=cpc&utm_campaign=GitHubDockerMail)
 
+## User feedback and support
 
-## User Feedback and Support
-
-If you have any problems with or questions about [ONLYOFFICE][2], please visit our official forum to find answers to your questions: [dev.onlyoffice.org][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][3].
+If you have any problems with or questions about this image, please visit our official forum to find answers to your questions: [dev.onlyoffice.org][1] or you can ask and answer ONLYOFFICE development questions on [Stack Overflow][2].
 
   [1]: http://dev.onlyoffice.org
-  [2]: https://github.com/ONLYOFFICE
-  [3]: http://stackoverflow.com/questions/tagged/onlyoffice
+  [2]: http://stackoverflow.com/questions/tagged/onlyoffice
