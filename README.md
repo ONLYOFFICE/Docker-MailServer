@@ -14,7 +14,7 @@
 
 ## Overview
 
-ONLYOFFICE Mail Server is a full-featured mail server solution developed on the base of the iRedMail package, containing the following components: Postfix, Dovecot, SpamAssassin, ClamAV, OpenDKIM, Fail2ban.
+ONLYOFFICE Mail Server is a full-featured mail server solution developed on the base of the [iRedMail](https://www.iredmail.org/ "iRedMail - Free, Open Source Mail Server Solution") package, containing the following components: Postfix, Dovecot, SpamAssassin, ClamAV, OpenDKIM, Fail2ban.
 
 ## Functionality
 
